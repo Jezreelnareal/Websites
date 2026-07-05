@@ -2,12 +2,15 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
-import { Maximize2, Play, X } from "lucide-react";
+import { Maximize2, X } from "lucide-react";
+import { ViewportVideo } from "@/components/viewport-video";
 import type { WebProject } from "@/lib/data";
 
 type SpotlightProjectsProps = {
   projects: WebProject[];
 };
+
+const DEFAULT_VIDEO_VOLUME = 0.5;
 
 export function SpotlightProjects({ projects }: SpotlightProjectsProps) {
   const [selectedProject, setSelectedProject] = useState<WebProject | null>(null);
@@ -67,8 +70,13 @@ export function SpotlightProjects({ projects }: SpotlightProjectsProps) {
                     <p className="mt-5 text-sm leading-8 text-[#ededed]/62">
                       {project.shortInfo}
                     </p>
+                  </div>
 
-                    <div className="mt-6 flex flex-wrap gap-2">
+                  <div className="border-t border-[#dac5a7]/12 pt-5">
+                    <p className="text-[10px] uppercase tracking-[0.22em] text-[#ededed]/36">
+                      Tech Stack
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
                       {project.stack.map((item) => (
                         <span
                           key={item}
@@ -79,16 +87,6 @@ export function SpotlightProjects({ projects }: SpotlightProjectsProps) {
                       ))}
                     </div>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setSelectedProject(project)}
-                    className="inline-flex h-12 w-fit items-center gap-3 border border-[#dac5a7]/35 bg-[#dac5a7]/[0.07] px-5 text-xs uppercase tracking-[0.14em] text-[#dac5a7] transition hover:border-[#dac5a7]/60 hover:bg-[#dac5a7]/[0.14]"
-                    data-hover-load="button"
-                  >
-                    <Play aria-hidden="true" className="h-4 w-4" />
-                    <span>{hasVideo ? "Watch Preview" : "View Details"}</span>
-                  </button>
                 </div>
 
                 <button
@@ -99,9 +97,8 @@ export function SpotlightProjects({ projects }: SpotlightProjectsProps) {
                   aria-label={`Open ${project.title}`}
                 >
                   {hasVideo ? (
-                    <video
+                    <ViewportVideo
                       src={project.video}
-                      autoPlay
                       muted
                       loop
                       playsInline
@@ -115,9 +112,6 @@ export function SpotlightProjects({ projects }: SpotlightProjectsProps) {
                     </div>
                   )}
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/22" />
-                  <div className="absolute left-5 top-5 border border-white/10 bg-black/45 px-3 py-1.5 text-xs uppercase tracking-[0.18em] text-[#ededed]/72 backdrop-blur-md">
-                    {hasVideo ? "Interface Preview" : "Video Empty"}
-                  </div>
                   <span className="absolute bottom-5 right-5 flex h-11 w-11 items-center justify-center border border-[#dac5a7]/30 bg-black/45 text-[#dac5a7] backdrop-blur-md transition group-hover:border-[#dac5a7]/60 group-hover:bg-[#dac5a7]/[0.12]">
                     <Maximize2 aria-hidden="true" className="h-4 w-4" />
                   </span>
@@ -174,6 +168,9 @@ export function SpotlightProjects({ projects }: SpotlightProjectsProps) {
                       controls
                       autoPlay
                       playsInline
+                      onLoadedMetadata={(event) => {
+                        event.currentTarget.volume = DEFAULT_VIDEO_VOLUME;
+                      }}
                       className="max-h-[62vh] w-full bg-black object-contain shadow-[0_18px_50px_rgba(0,0,0,.35)]"
                     />
                   ) : (

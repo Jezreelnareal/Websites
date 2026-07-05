@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { SectionHeading } from "@/components/section-heading";
 import { SpotlightProjects } from "@/components/spotlight-projects";
 import { SubHero } from "@/components/sub-hero";
+import { VideoHighlightGallery } from "@/components/video-highlight-gallery";
 import { graphicImages, videoHighlights, webProjects } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -14,7 +15,11 @@ export default function SpotlightsPage() {
     <>
       <SubHero label="Spotlights" />
 
-      <section className="px-6 py-24" data-scroll-reveal="section">
+      <section
+        id="graphics-editing"
+        className="scroll-mt-28 px-6 py-24"
+        data-scroll-reveal="section"
+      >
         <SectionHeading
           title="Graphics Editing Highlights"
           description="Explore a collection of visual projects that demonstrate branding, layout, and graphics editing work."
@@ -42,39 +47,23 @@ export default function SpotlightsPage() {
         </div>
       </section>
 
-      <section className="px-6 py-24" data-scroll-reveal="section">
+      <section
+        id="video-editing"
+        className="scroll-mt-28 px-6 py-24"
+        data-scroll-reveal="section"
+      >
         <SectionHeading
           title="Video Editing Highlights"
           description="A selection of short videos that show pacing, visual storytelling, and promotional editing work."
         />
-        <div className="mx-auto mt-16 grid max-w-7xl grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          {videoHighlights.map((video, videoIndex) => (
-            <article
-              key={video.src}
-              className="aspect-[365/570] overflow-hidden border border-white/10 bg-black"
-              data-scroll-reveal="item"
-              data-hover-load="media"
-              style={
-                {
-                  "--reveal-delay": `${Math.min(videoIndex, 5) * 70}ms`
-                } as CSSProperties
-              }
-            >
-              <video
-                src={video.src}
-                title={video.title}
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="h-full w-full object-cover"
-              />
-            </article>
-          ))}
-        </div>
+        <VideoHighlightGallery videos={videoHighlights} />
       </section>
 
-      <section className="px-6 py-24" data-scroll-reveal="section">
+      <section
+        id="web-development"
+        className="scroll-mt-28 px-6 py-24"
+        data-scroll-reveal="section"
+      >
         <SectionHeading
           title="Web Development Highlights"
           description="Interface previews paired with the purpose, stack, and development direction behind each build."

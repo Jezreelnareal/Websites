@@ -4,18 +4,24 @@ import {
   ArrowRight,
   Blocks,
   BriefcaseBusiness,
+  Clapperboard,
   Code2,
+  ImageIcon,
+  MonitorPlay,
   PanelsTopLeft
 } from "lucide-react";
 import { ContactPanel } from "@/components/contact-panel";
 import { InfoCardGrid } from "@/components/info-card-grid";
+import { ViewportVideo } from "@/components/viewport-video";
 import {
   experienceEntries,
+  graphicImages,
   heroBackdrop,
   homeHeroVideos,
   identityCards,
   projectEntries,
-  spotlightCards
+  videoHighlights,
+  webProjects
 } from "@/lib/data";
 
 const resumePreview = [
@@ -74,10 +80,9 @@ export default function HomePage() {
       >
         <div className="absolute inset-0 grid grid-cols-2 opacity-25 md:grid-cols-4 md:opacity-35">
           {homeHeroVideos.map((video) => (
-            <video
+            <ViewportVideo
               key={video}
               src={video}
-              autoPlay
               muted
               loop
               playsInline
@@ -335,23 +340,241 @@ export default function HomePage() {
       </section>
 
       <section
-        className="mx-auto max-w-[1600px] px-6 py-24 text-center sm:px-10"
+        className="mx-auto max-w-[1600px] px-6 py-24 sm:px-10 lg:px-16 xl:px-20"
         data-scroll-reveal="section"
       >
-        <span className="text-xs uppercase tracking-[0.3em] text-[#dac5a7]/60">
-          My Work
-        </span>
-        <Link
-          href="/spotlights"
-          className="mt-4 inline-block transition"
-          data-hover-load="text"
-        >
-          <h2 className="font-serif text-4xl font-light text-[#dac5a7]">
-            Spotlights
-          </h2>
-        </Link>
-        <div className="mt-12">
-          <InfoCardGrid cards={spotlightCards} centered />
+        <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr]">
+          <div>
+            <span className="text-xs uppercase tracking-[0.3em] text-[#dac5a7]/60">
+              My Work
+            </span>
+            <Link
+              href="/spotlights"
+              className="mt-4 inline-block transition"
+              data-hover-load="text"
+            >
+              <h2 className="font-serif text-4xl font-light text-[#dac5a7]">
+                Spotlights
+              </h2>
+            </Link>
+            <p className="mt-5 max-w-xl text-sm leading-8 text-[#ededed]/62">
+              A curated preview of the creative and technical work expanded on
+              the Spotlights page, from interface builds to short-form video
+              edits and graphic design pieces.
+            </p>
+
+            <div className="mt-9 divide-y divide-white/10 border-y border-white/10">
+              {[
+                {
+                  title: "Web Development",
+                  description: `${webProjects.length} project previews`,
+                  icon: MonitorPlay,
+                  href: "/spotlights#web-development"
+                },
+                {
+                  title: "Video Editing",
+                  description: `${videoHighlights.length} motion highlights`,
+                  icon: Clapperboard,
+                  href: "/spotlights#video-editing"
+                },
+                {
+                  title: "Graphics Editing",
+                  description: `${graphicImages.length} visual pieces`,
+                  icon: ImageIcon,
+                  href: "/spotlights#graphics-editing"
+                }
+              ].map((item, itemIndex) => {
+                const SpotlightIcon = item.icon;
+
+                return (
+                  <Link
+                    key={item.title}
+                    href={item.href}
+                    className="group flex items-center gap-4 py-5 transition hover:bg-white/[0.018]"
+                    data-scroll-reveal="item"
+                    data-hover-load="soft"
+                    style={
+                      {
+                        "--reveal-delay": `${itemIndex * 75}ms`
+                      } as CSSProperties
+                    }
+                  >
+                    <span className="ml-3 flex h-11 w-11 flex-none items-center justify-center border border-[#dac5a7]/20 bg-[#dac5a7]/[0.055] text-[#dac5a7] transition group-hover:border-[#dac5a7]/42 group-hover:bg-[#dac5a7]/[0.09]">
+                      <SpotlightIcon
+                        aria-hidden="true"
+                        className="h-5 w-5"
+                        strokeWidth={1.8}
+                      />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block font-serif text-xl font-light text-[#dac5a7]">
+                        {item.title}
+                      </span>
+                      <span className="mt-1 block text-xs uppercase tracking-[0.16em] text-[#ededed]/42">
+                        {item.description}
+                      </span>
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+
+            <Link
+              href="/spotlights#web-development"
+              className="mt-9 inline-flex items-center gap-3 border border-[#dac5a7]/35 bg-[#dac5a7]/[0.07] px-6 py-3 text-xs uppercase tracking-[0.16em] text-[#dac5a7] transition hover:-translate-y-0.5 hover:border-[#dac5a7]/60 hover:bg-[#dac5a7]/[0.14]"
+              data-hover-load="button"
+            >
+              <span>Open Spotlights</span>
+              <ArrowRight aria-hidden="true" className="h-4 w-4" />
+            </Link>
+          </div>
+
+          <div className="grid gap-6">
+            <Link
+              href="/spotlights"
+              className="group grid overflow-hidden border border-white/10 bg-[linear-gradient(135deg,rgba(218,197,167,.055),rgba(255,255,255,.018)_45%,rgba(14,15,15,.92))] shadow-[0_18px_45px_rgba(0,0,0,.2)] transition hover:border-[#dac5a7]/25 hover:shadow-[0_22px_65px_rgba(0,0,0,.28)] lg:grid-cols-[0.82fr_1.18fr]"
+              data-scroll-reveal="item"
+              data-hover-load="card"
+            >
+              <div className="flex flex-col justify-between gap-8 border-b border-[#dac5a7]/10 p-6 sm:p-8 lg:border-b-0 lg:border-r">
+                <div>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-xs uppercase tracking-[0.24em] text-[#dac5a7]/55">
+                      Web Preview
+                    </span>
+                    <span className="border border-[#dac5a7]/12 bg-[#dac5a7]/[0.06] px-2.5 py-1 text-xs text-[#ededed]/58">
+                      {webProjects[0].label}
+                    </span>
+                  </div>
+
+                  <h3 className="mt-5 font-serif text-3xl font-light leading-tight text-[#dac5a7] sm:text-4xl">
+                    {webProjects[0].title}
+                  </h3>
+                  <p className="mt-5 text-sm leading-8 text-[#ededed]/62">
+                    {webProjects[0].shortInfo}
+                  </p>
+
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {webProjects[0].stack.map((item) => (
+                      <span
+                        key={item}
+                        className="border border-[#dac5a7]/12 bg-[#ededed]/[0.045] px-2.5 py-1 text-xs leading-none text-[#ededed]/70"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <span className="inline-flex w-fit items-center gap-3 text-xs uppercase tracking-[0.16em] text-[#dac5a7]/75 transition group-hover:text-[#dac5a7]">
+                  View full preview
+                  <ArrowRight aria-hidden="true" className="h-4 w-4" />
+                </span>
+              </div>
+
+              <div className="relative min-h-[300px] overflow-hidden bg-black lg:min-h-[430px]">
+                {webProjects[0].video ? (
+                  <ViewportVideo
+                    src={webProjects[0].video}
+                    muted
+                    loop
+                    playsInline
+                    className="absolute inset-0 h-full w-full object-contain transition duration-500 group-hover:brightness-110"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(135deg,rgba(218,197,167,.06),rgba(255,255,255,.018)_45%,rgba(0,0,0,.72))]">
+                    <span className="border border-[#dac5a7]/15 bg-black/35 px-4 py-2 text-xs uppercase tracking-[0.2em] text-[#ededed]/45">
+                      Preview Pending
+                    </span>
+                  </div>
+                )}
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/22" />
+                <div className="absolute left-5 top-5 border border-white/10 bg-black/45 px-3 py-1.5 text-xs uppercase tracking-[0.18em] text-[#ededed]/72 backdrop-blur-md">
+                  Interface Preview
+                </div>
+              </div>
+            </Link>
+
+            <div className="grid gap-6 xl:grid-cols-2">
+              <Link
+                href="/spotlights#video-editing"
+                className="group overflow-hidden border border-white/10 bg-white/[0.025] p-5 transition hover:border-[#dac5a7]/25 hover:bg-white/[0.035]"
+                data-scroll-reveal="item"
+                data-hover-load="card"
+                style={{ "--reveal-delay": "90ms" } as CSSProperties}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.22em] text-[#dac5a7]/55">
+                      Video Editing
+                    </p>
+                    <h3 className="mt-3 font-serif text-2xl font-light text-[#dac5a7]">
+                      Motion highlights with pacing and rhythm.
+                    </h3>
+                  </div>
+                  <Clapperboard
+                    aria-hidden="true"
+                    className="h-5 w-5 text-[#dac5a7]/55"
+                    strokeWidth={1.8}
+                  />
+                </div>
+
+                <div className="mt-5 grid grid-cols-3 gap-2">
+                  {videoHighlights.slice(0, 3).map((video) => (
+                    <div
+                      key={video.src}
+                      className="aspect-[9/13] overflow-hidden bg-black"
+                    >
+                      <ViewportVideo
+                        src={video.src}
+                        title={video.title}
+                        muted
+                        loop
+                        playsInline
+                        className="h-full w-full object-cover transition duration-300 group-hover:brightness-110"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </Link>
+
+              <Link
+                href="/spotlights#graphics-editing"
+                className="group overflow-hidden border border-white/10 bg-white/[0.025] p-5 transition hover:border-[#dac5a7]/25 hover:bg-white/[0.035]"
+                data-scroll-reveal="item"
+                data-hover-load="card"
+                style={{ "--reveal-delay": "160ms" } as CSSProperties}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.22em] text-[#dac5a7]/55">
+                      Graphics Editing
+                    </p>
+                    <h3 className="mt-3 font-serif text-2xl font-light text-[#dac5a7]">
+                      Visual pieces for branding and presentation.
+                    </h3>
+                  </div>
+                  <ImageIcon
+                    aria-hidden="true"
+                    className="h-5 w-5 text-[#dac5a7]/55"
+                    strokeWidth={1.8}
+                  />
+                </div>
+
+                <div className="mt-5 grid grid-cols-4 gap-2">
+                  {graphicImages.slice(0, 4).map((image) => (
+                    <div
+                      key={image.src}
+                      className="aspect-square overflow-hidden bg-[#141515] bg-cover bg-center transition duration-300 group-hover:brightness-110"
+                      style={{ backgroundImage: `url(${image.src})` }}
+                      role="img"
+                      aria-label={image.alt}
+                    />
+                  ))}
+                </div>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 

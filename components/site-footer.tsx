@@ -97,9 +97,7 @@ export function SiteFooter() {
                 height={60}
                 className="h-12 w-auto object-contain [filter:drop-shadow(0_0_12px_rgba(218,197,167,.14))]"
               />
-              <span className="font-serif text-3xl font-light text-[#dac5a7]">
-                Jezreel Borlongan
-              </span>
+
             </Link>
             <p className="mt-6 max-w-md text-sm leading-8 text-[#ededed]/60">
               Web designer and developer focused on clean interfaces,
