@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact-form";
 import { ContactPanel } from "@/components/contact-panel";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Let's Talk"
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Let's Talk",
+  description:
+    "Contact Jezreel Borlongan for web development, blockchain project concepts, responsive interfaces, graphic design, and video editing collaboration.",
+  path: "/lets-talk"
+});
 
 export default function LetsTalkPage() {
   return (

@@ -5,10 +5,14 @@ import { SpotlightProjects } from "@/components/spotlight-projects";
 import { SubHero } from "@/components/sub-hero";
 import { VideoHighlightGallery } from "@/components/video-highlight-gallery";
 import { graphicImages, videoHighlights, webProjects } from "@/lib/data";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Spotlights"
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Spotlights",
+  description:
+    "View Jezreel Borlongan's web development highlights, video editing work, and graphic design pieces with project context, tech stacks, and visual previews.",
+  path: "/spotlights"
+});
 
 export default function SpotlightsPage() {
   return (

@@ -12,10 +12,14 @@ import {
   services,
   skills
 } from "@/lib/data";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Who Am I?"
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Who Am I?",
+  description:
+    "Learn about Jezreel Borlongan's experience, selected projects, awards, skills, services, and working stack across web development, blockchain, and creative media.",
+  path: "/who-am-i"
+});
 
 const visibleDetails = personalDetails.filter(([label]) =>
   ["Birthday", "Phone", "Email", "From", "Freelance"].includes(label)
