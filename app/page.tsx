@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import {
@@ -23,6 +24,14 @@ import {
   videoHighlights,
   webProjects
 } from "@/lib/data";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Web & Blockchain Developer Portfolio",
+  description:
+    "Explore the portfolio of Jezreel Borlongan, featuring responsive web development, blockchain project concepts, video editing highlights, and graphic design work.",
+  path: "/"
+});
 
 const resumePreview = [
   {
