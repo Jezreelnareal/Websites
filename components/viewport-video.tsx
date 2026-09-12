@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  type VideoHTMLAttributes
-} from "react";
+import { useEffect, useRef, type VideoHTMLAttributes } from "react";
 
 type ViewportVideoProps = VideoHTMLAttributes<HTMLVideoElement> & {
   playWhenVisible?: boolean;
@@ -32,14 +28,8 @@ export function ViewportVideo({
       return;
     }
 
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    if (prefersReducedMotion) {
-      video.pause();
-      return;
-    }
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let visible = false;
 
     const playVideo = () => {
       if (video.paused) {
@@ -53,24 +43,30 @@ export function ViewportVideo({
       }
     };
 
+    const syncPlayback = () => {
+      if (visible && !motion.matches && !document.hidden) playVideo();
+      else pauseVideo();
+    };
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          playVideo();
-        } else {
-          pauseVideo();
-        }
+        visible = entry.isIntersecting;
+        syncPlayback();
       },
       {
         rootMargin: visibilityRootMargin,
-        threshold: 0.15
-      }
+        threshold: 0.15,
+      },
     );
 
     observer.observe(video);
+    motion.addEventListener("change", syncPlayback);
+    document.addEventListener("visibilitychange", syncPlayback);
 
     return () => {
       observer.disconnect();
+      motion.removeEventListener("change", syncPlayback);
+      document.removeEventListener("visibilitychange", syncPlayback);
       pauseVideo();
     };
   }, [controlsPlayback, src, visibilityRootMargin]);

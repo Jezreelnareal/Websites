@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { ScrollReveal } from "@/components/scroll-reveal";
-import { ScrollRestoration } from "@/components/scroll-restoration";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { MotionReveal } from "@/components/motion-reveal";
+import { SceneMotion } from "@/components/scene-motion";
 import {
   authorName,
   defaultOgImage,
@@ -11,16 +11,23 @@ import {
   siteDescription,
   siteName,
   siteUrl,
-  websiteJsonLd
+  websiteJsonLd,
 } from "@/lib/seo";
 import "./globals.css";
+import "./classic-hero.css";
+import "./experience.css";
+import "./section-surfaces.css";
+import "./navigation.css";
+import "@fontsource-variable/dm-sans";
+import "@fontsource/instrument-serif/400.css";
+import "@fontsource/instrument-serif/400-italic.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   applicationName: siteName,
   title: {
     default: `${authorName} | Web & Blockchain Developer`,
-    template: `%s | ${authorName}`
+    template: `%s | ${authorName}`,
   },
   description: siteDescription,
   keywords: seoKeywords,
@@ -28,7 +35,7 @@ export const metadata: Metadata = {
   creator: authorName,
   publisher: authorName,
   alternates: {
-    canonical: "/"
+    canonical: "/",
   },
   openGraph: {
     title: `${authorName} | Web & Blockchain Developer`,
@@ -38,18 +45,18 @@ export const metadata: Metadata = {
     images: [
       {
         url: defaultOgImage,
-        alt: `${authorName} portfolio preview`
-      }
+        alt: `${authorName} portfolio preview`,
+      },
     ],
     locale: "en_US",
-    type: "website"
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: `${authorName} | Web & Blockchain Developer`,
     description: siteDescription,
     images: [defaultOgImage],
-    creator: "@jborlongan07"
+    creator: "@jborlongan07",
   },
   robots: {
     index: true,
@@ -59,33 +66,37 @@ export const metadata: Metadata = {
       follow: true,
       "max-image-preview": "large",
       "max-snippet": -1,
-      "max-video-preview": -1
-    }
-  }
+      "max-video-preview": -1,
+    },
+  },
 };
 
 const structuredData = JSON.stringify([personJsonLd, websiteJsonLd]).replace(
   /</g,
-  "\\u003c"
+  "\\u003c",
 );
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-reveal-ready">
-      <body className="min-h-screen bg-[#0e0f0f] text-[#ededed] antialiased">
+    <html lang="en" id="top">
+      <body>
+        <a href="#main-content" className="skip-link">
+          Skip to content
+        </a>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: structuredData }}
         />
-        <ScrollRestoration />
-        <ScrollReveal />
+        <MotionReveal />
+        <SceneMotion />
         <SiteHeader />
-        <main className="mx-auto w-full max-w-[2040px]">{children}</main>
-        <div className="h-px w-full bg-[#ededed]/70" />
+        <main id="main-content" tabIndex={-1}>
+          {children}
+        </main>
         <SiteFooter />
       </body>
     </html>
