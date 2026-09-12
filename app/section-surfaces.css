@@ -11,7 +11,6 @@
   .work-section,
   .creative-section,
   .home-journey,
-  .work-page .spotlight-intro,
   .work-page .work-category,
   .about-page .about-intro,
   .about-page .about-story,
@@ -21,7 +20,8 @@
   min-height: 100svh;
 }
 
-.certificate-collection-intro {
+.certificate-collection-intro,
+.work-page .spotlight-intro {
   min-height: 60svh;
 }
 
