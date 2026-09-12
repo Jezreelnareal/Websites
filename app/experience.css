@@ -50,48 +50,6 @@
 
 .project-dialog {
   width: min(1280px, calc(100vw - 64px));
-  max-height: calc(100dvh - 48px);
-  border: 1px solid #dac5a726;
-  border-radius: 16px;
-  background: #111311;
-  box-shadow: 0 32px 120px #0009;
-  overflow: hidden;
-}
-.project-dialog::backdrop {
-  background: #060807ed;
-}
-.project-dialog .preview-header {
-  padding: 24px 32px;
-  border: 0;
-}
-.project-dialog .preview-header > div {
-  min-width: 0;
-}
-.project-dialog .preview-eyebrow {
-  margin-bottom: 8px;
-  color: var(--gold);
-  font-size: 10px;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-.project-dialog .preview-header h2 {
-  font-size: clamp(24px, 3vw, 38px);
-  font-weight: 500;
-  letter-spacing: -0.045em;
-  line-height: 1.12;
-}
-.project-dialog .preview-header button {
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: #dac5a70d;
-}
-.project-dialog .preview-header button:hover {
-  background: #dac5a724;
-}
-.project-dialog .preview-body {
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: #dac5a745 transparent;
 }
 .project-dialog .project-player {
   max-height: 65dvh;
