@@ -1,81 +1,112 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
-import { SectionHeading } from "@/components/section-heading";
 import { SpotlightProjects } from "@/components/spotlight-projects";
-import { SubHero } from "@/components/sub-hero";
 import { VideoHighlightGallery } from "@/components/video-highlight-gallery";
+import { GraphicGallery } from "@/components/graphic-gallery";
+import { SpotlightNavigation } from "@/components/spotlight-navigation";
 import { graphicImages, videoHighlights, webProjects } from "@/lib/data";
 import { createPageMetadata } from "@/lib/seo";
+import "./spotlights.css";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Spotlights",
+  title: "Selected Work",
   description:
-    "View Jezreel Borlongan's web development highlights, video editing work, and graphic design pieces with project context, tech stacks, and visual previews.",
-  path: "/spotlights"
+    "Websites, blockchain projects, product graphics, and short-form videos by Jezreel Borlongan.",
+  path: "/spotlights",
 });
 
 export default function SpotlightsPage() {
   return (
-    <>
-      <SubHero label="Spotlights" />
-
-      <section
-        id="graphics-editing"
-        className="scroll-mt-28 px-6 py-24"
-        data-scroll-reveal="section"
-      >
-        <SectionHeading
-          title="Graphics Editing Highlights"
-          description="Explore a collection of visual projects that demonstrate branding, layout, and graphics editing work."
-        />
-        <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {graphicImages.map((image, imageIndex) => (
-            <article
-              key={image.src}
-              className="aspect-square overflow-hidden border border-white/10 bg-[#464646]/10"
-              data-scroll-reveal="item"
-              data-hover-load="media"
-              style={
-                {
-                  "--reveal-delay": `${Math.min(imageIndex, 8) * 55}ms`
-                } as CSSProperties
-              }
-            >
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="h-full w-full object-cover transition duration-300 hover:scale-105"
-              />
-            </article>
-          ))}
+    <div className="page-width work-page">
+      <header className="page-intro spotlight-intro">
+        <span className="eyebrow">Spotlights / Selected work</span>
+        <h1 className="chapter-heading">
+          <span>Code. Cut.</span>
+          <em>Create.</em>
+        </h1>
+        <div className="spotlight-intro-note">
+          <p>
+            From working systems to visual stories. A closer look at the things
+            I build, edit, and design.
+          </p>
+          <span className="eyebrow">Development / Motion / Design</span>
         </div>
-      </section>
-
-      <section
-        id="video-editing"
-        className="scroll-mt-28 px-6 py-24"
-        data-scroll-reveal="section"
-      >
-        <SectionHeading
-          title="Video Editing Highlights"
-          description="A selection of short videos that show pacing, visual storytelling, and promotional editing work."
-        />
-        <VideoHighlightGallery videos={videoHighlights} />
-      </section>
-
+      </header>
+      <SpotlightNavigation>
+        <a href="#web-development">
+          Development
+          <small>{String(webProjects.length).padStart(2, "0")}</small>
+        </a>
+        <a href="#video-editing">
+          Motion
+          <small>{String(videoHighlights.length).padStart(2, "0")}</small>
+        </a>
+        <a href="#graphics-editing">
+          Graphics
+          <small>{String(graphicImages.length).padStart(2, "0")}</small>
+        </a>
+      </SpotlightNavigation>
       <section
         id="web-development"
-        className="scroll-mt-28 px-6 py-24"
-        data-scroll-reveal="section"
+        className="work-category"
+        aria-labelledby="development-title"
       >
-        <SectionHeading
-          title="Web Development Highlights"
-          description="Interface previews paired with the purpose, stack, and development direction behind each build."
-        />
-        <div className="mt-16">
-          <SpotlightProjects projects={webProjects} />
+        <div className="spotlight-section-heading">
+          <div>
+            <span className="eyebrow">01 / Development</span>
+            <h2 id="development-title">
+              Built to <em>work.</em>
+            </h2>
+          </div>
+          <p>
+            Websites, payment concepts, and systems. Open a video for a closer
+            look at the project.
+          </p>
         </div>
+        <SpotlightProjects
+          projects={[
+            ...webProjects.filter((project) => project.title === "RemitSafe"),
+            ...webProjects.filter((project) => project.title !== "RemitSafe"),
+          ]}
+        />
       </section>
-    </>
+      <section
+        id="video-editing"
+        className="work-category"
+        aria-labelledby="motion-title"
+      >
+        <div className="spotlight-section-heading">
+          <div>
+            <span className="eyebrow">02 / Motion</span>
+            <h2 id="motion-title">
+              Made to <em>move.</em>
+            </h2>
+          </div>
+          <p>
+            Short-form edits, pacing, and visual storytelling. Select a film to
+            watch it in full.
+          </p>
+        </div>
+        <VideoHighlightGallery videos={videoHighlights} />
+      </section>
+      <section
+        id="graphics-editing"
+        className="work-category"
+        aria-labelledby="graphics-title"
+      >
+        <div className="spotlight-section-heading">
+          <div>
+            <span className="eyebrow">03 / Graphics</span>
+            <h2 id="graphics-title">
+              An eye for <em>detail.</em>
+            </h2>
+          </div>
+          <p>
+            Product graphics for LNGR Thrift Shop and footwear campaigns. Select
+            a piece to see the full design.
+          </p>
+        </div>
+        <GraphicGallery images={graphicImages} />
+      </section>
+    </div>
   );
 }

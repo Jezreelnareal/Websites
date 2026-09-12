@@ -3,18 +3,121 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { Menu, X, ArrowUpRight } from "lucide-react";
 import { navLinks } from "@/lib/data";
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const header = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const element = header.current;
+    if (!element) return;
+    let heroContent: HTMLElement | null = null;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = element.getBoundingClientRect();
+      // Resolve the current DOM after route streaming, restored scroll positions,
+      // and layout changes instead of retaining an earlier page's sections.
+      const hero = document.querySelector<HTMLElement>(".classic-hero");
+      heroContent =
+        hero?.querySelector<HTMLElement>(".classic-hero-content") ?? null;
+      const surfaces = Array.from(
+        document.querySelectorAll<HTMLElement>(
+          ".certificate-highlights, .work-section, .creative-section, .home-journey, .work-category, .about-story, .resume-section, .certificates-page .certificate-chapter, .site-footer",
+        ),
+      );
+      const sampleY = rect.bottom + 1;
+      const overHero = Boolean(
+        hero && hero.getBoundingClientRect().bottom > sampleY,
+      );
+      element.toggleAttribute("data-scrolled", window.scrollY > 0);
+      element.toggleAttribute("data-over-hero", overHero);
+      const surface = surfaces.find((section) => {
+        const bounds = section.getBoundingClientRect();
+        return bounds.top <= sampleY && bounds.bottom > sampleY;
+      });
+      element.style.setProperty(
+        "--nav-mask-bg",
+        surface ? getComputedStyle(surface).backgroundColor : "var(--bg)",
+      );
+      if (heroContent) {
+        const hiddenHeight = Math.max(
+          0,
+          rect.top - heroContent.getBoundingClientRect().top,
+        );
+        heroContent.style.clipPath = `inset(${hiddenHeight}px -100vmax 0)`;
+      }
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    const main = document.getElementById("main-content");
+    const contentObserver = new MutationObserver(schedule);
+    const layoutObserver = new ResizeObserver(schedule);
+    if (main) {
+      contentObserver.observe(main, { childList: true, subtree: true });
+      layoutObserver.observe(main);
+    }
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      contentObserver.disconnect();
+      layoutObserver.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      heroContent?.style.removeProperty("clip-path");
+    };
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const outside = (event: PointerEvent) => {
+      if (
+        event.target instanceof Node &&
+        !header.current?.contains(event.target)
+      )
+        setOpen(false);
+    };
+    const desktop = window.matchMedia("(min-width: 768px)");
+    const resize = () => {
+      if (desktop.matches) setOpen(false);
+    };
+    document.addEventListener("pointerdown", outside);
+    desktop.addEventListener("change", resize);
+    return () => {
+      document.removeEventListener("pointerdown", outside);
+      desktop.removeEventListener("change", resize);
+    };
+  }, [open]);
 
   return (
-    <header className="fixed left-1/2 top-5 z-50 flex h-[57px] w-[calc(100%-2rem)] max-w-[633px] -translate-x-1/2 items-center justify-between gap-4 border border-[#dac5a7]/30 bg-[#c5c5c5]/10 px-4 backdrop-blur-3xl">
+    <header
+      ref={header}
+      className="site-header"
+      data-page={pathname}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+          setOpen(false);
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          setOpen(false);
+          menuButton.current?.focus();
+        }
+      }}
+    >
       <Link
         href="/"
         aria-label="Go to home"
-        className="group flex h-11 w-11 shrink-0 items-center justify-center transition duration-300"
-        data-hover-load="soft"
+        className="site-brand"
+        onClick={() => setOpen(false)}
       >
         <Image
           src="/pics/nav-logo.png"
@@ -22,40 +125,54 @@ export function SiteHeader() {
           width={42}
           height={49}
           priority
-          className="h-10 w-auto object-contain [filter:drop-shadow(0_0_10px_rgba(218,197,167,.12))] transition duration-300 group-hover:brightness-110"
+          className="h-9 w-auto object-contain"
         />
+        <span className="nav-brand-name" aria-hidden="true">
+          Jezreel <span>Borlongan</span>
+        </span>
       </Link>
-      <nav
-        aria-label="Primary navigation"
-        className="flex items-center gap-1 overflow-x-auto text-sm font-normal sm:text-base"
+      <nav aria-label="Primary navigation" className="desktop-navigation">
+        {navLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            aria-current={pathname === link.href ? "page" : undefined}
+          >
+            {link.label}
+            {link.href === "/lets-talk" && <ArrowUpRight size={13} />}
+          </Link>
+        ))}
+      </nav>
+      <button
+        ref={menuButton}
+        type="button"
+        className="mobile-menu-toggle"
+        aria-expanded={open}
+        aria-controls="mobile-navigation"
+        aria-label={open ? "Close navigation" : "Open navigation"}
+        onClick={() => setOpen(!open)}
       >
-        {navLinks.map((link) => {
-          const isActive = pathname === link.href;
-
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              aria-current={isActive ? "page" : undefined}
-              data-hover-load="text"
-              className={`group relative isolate whitespace-nowrap overflow-hidden px-2.5 py-2 transition-[color,text-shadow,filter] duration-300 ease-out hover:text-[#dac5a7] focus-visible:outline-none focus-visible:[text-shadow:0_0_18px_rgba(218,197,167,.22)] sm:px-3 ${
-                isActive
-                  ? "text-[#dac5a7] [text-shadow:0_0_18px_rgba(218,197,167,.18)]"
-                  : "text-[#ededed]/78"
-              }`}
-            >
-              <span
-                aria-hidden="true"
-                className={`absolute inset-x-2 bottom-1 h-[2px] origin-center bg-[linear-gradient(90deg,transparent,rgba(218,197,167,.35),#dac5a7,rgba(218,197,167,.35),transparent)] transition-[opacity,transform,filter] duration-500 ease-out ${
-                  isActive
-                    ? "scale-x-100 opacity-100 [filter:drop-shadow(0_0_8px_rgba(218,197,167,.45))]"
-                    : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-75 group-hover:[filter:drop-shadow(0_0_6px_rgba(218,197,167,.28))]"
-                  }`}
-              />
-              <span className="relative z-10">{link.label}</span>
-            </Link>
-          );
-        })}
+        <span>{open ? "Close" : "Menu"}</span>
+        {open ? <X size={21} /> : <Menu size={21} />}
+      </button>
+      <nav
+        id="mobile-navigation"
+        aria-label="Mobile navigation"
+        className="mobile-navigation"
+        hidden={!open}
+      >
+        <p className="mobile-navigation-label">Explore the portfolio</p>
+        {navLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            aria-current={pathname === link.href ? "page" : undefined}
+            onClick={() => setOpen(false)}
+          >
+            {link.label}
+            <ArrowUpRight size={16} />
+          </Link>
+        ))}
       </nav>
     </header>
   );

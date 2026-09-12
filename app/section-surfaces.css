@@ -1,0 +1,82 @@
+:root {
+  --surface-learning: color-mix(in srgb, var(--bg) 97%, white);
+  --surface-development: var(--bg);
+  --surface-creative: color-mix(in srgb, var(--bg) 95%, white);
+  --surface-journey: color-mix(in srgb, var(--bg) 88%, black);
+}
+
+/* Extend each section's surface to the viewport without changing content widths
+   or introducing an overflow container that would break sticky elements. */
+:is(
+  .certificate-highlights,
+  .work-section,
+  .creative-section,
+  .home-journey,
+  .work-page .work-category,
+  .about-page .about-story,
+  .about-page .resume-section,
+  .certificates-page .certificate-chapter
+) {
+  background: var(--section-surface);
+  box-shadow: 0 0 0 100vmax var(--section-surface);
+  clip-path: inset(0 -100vmax);
+}
+
+.certificate-highlights {
+  --section-surface: var(--surface-learning);
+  padding-bottom: 64px;
+}
+.work-section,
+.work-page #web-development {
+  --section-surface: var(--surface-development);
+}
+.creative-section,
+.work-page #video-editing {
+  --section-surface: var(--surface-creative);
+}
+.home-journey {
+  --section-surface: var(--surface-journey);
+}
+.work-page #graphics-editing {
+  --section-surface: var(--surface-learning);
+}
+.work-page .work-category {
+  padding-bottom: 72px;
+}
+.about-page .about-story,
+.about-page #my-background {
+  --section-surface: var(--surface-learning);
+}
+.about-page .about-story {
+  padding-top: 64px;
+}
+.about-page #my-journey {
+  --section-surface: var(--surface-development);
+}
+.about-page #my-toolkit {
+  --section-surface: var(--surface-creative);
+}
+.certificates-page .certificate-chapter[data-theme="aws-cloud-quest"] {
+  --section-surface: var(--surface-learning);
+}
+.certificates-page .certificate-chapter[data-theme="trend-micro"] {
+  --section-surface: var(--surface-development);
+}
+.certificates-page .certificate-chapter[data-theme="python"] {
+  --section-surface: var(--surface-creative);
+}
+.certificates-page .certificate-chapter:not([data-theme]) {
+  --section-surface: var(--surface-journey);
+}
+.site-footer {
+  background: color-mix(in srgb, var(--bg) 80%, black);
+}
+
+@media (max-width: 767px) {
+  .certificate-highlights {
+    padding-bottom: 48px;
+  }
+  .work-page .work-category {
+    padding-bottom: 48px;
+  }
+}

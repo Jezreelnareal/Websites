@@ -1,0 +1,185 @@
+.contact-page .contact-layout {
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  align-items: start;
+  gap: 80px;
+  padding-block: 140px 100px;
+  border: 0;
+}
+.contact-page .page-intro {
+  padding: 0;
+}
+.contact-page .page-intro > .eyebrow {
+  margin-bottom: 28px;
+}
+.contact-page .page-intro h1.chapter-heading {
+  font-size: clamp(64px, 7.5vw, 108px);
+}
+.contact-page .page-intro h1.chapter-heading em {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-style: italic;
+  text-transform: none;
+  color: var(--gold);
+  -webkit-text-stroke: 0;
+  letter-spacing: -0.045em;
+}
+.contact-invitation {
+  margin-top: 28px;
+  max-width: 380px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.contact-page .contact-direct {
+  margin-top: 32px;
+}
+.contact-page .contact-direct > a {
+  min-height: 44px;
+  gap: 12px;
+  margin-top: 6px;
+  color: var(--paper);
+  font-size: clamp(12px, 1.15vw, 16px);
+}
+.contact-direct > a > svg {
+  flex-shrink: 0;
+  color: var(--gold);
+}
+.contact-page .contact-direct > a:hover {
+  color: var(--gold);
+}
+.contact-page .contact-location {
+  margin-top: 28px;
+  font-size: 11px;
+}
+.contact-page .contact-socials {
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 18px;
+}
+.contact-socials > a:hover {
+  color: var(--gold);
+}
+.contact-page .contact-form-wrap {
+  min-width: 0;
+  padding: 36px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg) 96%, white);
+}
+.contact-form-heading h2 {
+  margin-top: 16px;
+  font-size: clamp(30px, 3.1vw, 44px);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.045em;
+}
+.contact-form-heading h2 em {
+  font-family: var(--serif);
+  font-weight: 400;
+  color: var(--gold);
+}
+.contact-page .form-intro {
+  align-items: center;
+  margin-block: 18px 28px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.contact-page .form-intro > span {
+  flex-shrink: 0;
+}
+.contact-page .form-pair {
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.contact-page .contact-form label {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.contact-page .contact-form :is(input, select, textarea) {
+  padding: 12px 14px;
+  margin-top: 10px;
+  background: var(--bg);
+  border: 1px solid #dac5a71c;
+  border-radius: 5px;
+  font-size: 14px;
+  min-height: 50px;
+}
+.contact-page .contact-form :is(input, select, textarea):focus {
+  border-color: var(--gold);
+  outline: 2px solid #dac5a733;
+  outline-offset: 2px;
+}
+.contact-page .contact-form textarea {
+  min-height: 170px;
+}
+.contact-page .contact-form select {
+  padding-right: 24px;
+}
+.contact-page .form-actions {
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 24px;
+}
+.contact-page .send-button {
+  flex: 1;
+  min-width: 180px;
+  border-radius: 5px;
+}
+.contact-page .send-button .send-spinner {
+  transform: none;
+}
+.contact-page .form-status p {
+  padding: 14px;
+  background: var(--bg);
+  border-radius: 5px;
+}
+.contact-page .form-status svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.contact-page .contact-form > .text-link {
+  min-height: 44px;
+  margin-top: 10px;
+}
+@keyframes sending-message {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .contact-page .send-spinner {
+    animation: sending-message 1s linear infinite;
+  }
+}
+@media (max-width: 1100px) {
+  .contact-page .contact-layout {
+    gap: 40px;
+  }
+  .contact-page .contact-form-wrap {
+    padding: 28px;
+  }
+  .contact-page .form-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 767px) {
+  .contact-page .contact-layout {
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: 112px 56px;
+  }
+  .contact-page .page-intro h1.chapter-heading {
+    font-size: 18vw;
+  }
+  .contact-page .contact-form-wrap {
+    padding: 26px 20px;
+  }
+  .contact-page .contact-form :is(input, select, textarea) {
+    font-size: 16px;
+  }
+  .contact-page .contact-direct > a {
+    font-size: 13px;
+  }
+  .contact-page .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
