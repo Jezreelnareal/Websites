@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
-import { X } from "lucide-react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
+import { ArrowLeft, ArrowRight, X } from "lucide-react";
 
 export function PreviewDialog({
   title,
@@ -9,14 +9,24 @@ export function PreviewDialog({
   children,
   className = "",
   eyebrow,
+  collection,
+  hideTitle = false,
 }: {
   title: string;
   onClose: () => void;
   children: ReactNode;
   className?: string;
   eyebrow?: string;
+  hideTitle?: boolean;
+  collection?: {
+    index: number;
+    total: number;
+    onPrevious: () => void;
+    onNext: () => void;
+  };
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   useEffect(() => {
     const element = dialog.current;
     const trigger = document.activeElement as HTMLElement | null;
@@ -33,7 +43,7 @@ export function PreviewDialog({
     <dialog
       ref={dialog}
       className={`preview-dialog ${className}`}
-      aria-labelledby="preview-title"
+      aria-labelledby={titleId}
       onCancel={(event) => {
         event.preventDefault();
         onClose();
@@ -53,7 +63,9 @@ export function PreviewDialog({
       <header className="preview-header">
         <div>
           {eyebrow && <p className="preview-eyebrow">{eyebrow}</p>}
-          <h2 id="preview-title">{title}</h2>
+          <h2 id={titleId} className={hideTitle ? "sr-only" : undefined}>
+            {title}
+          </h2>
         </div>
         <button
           type="button"
@@ -65,6 +77,23 @@ export function PreviewDialog({
         </button>
       </header>
       <div className="preview-body">{children}</div>
+      {collection && collection.total > 1 && (
+        <footer className="preview-navigation" aria-label="Browse previews">
+          <button type="button" onClick={collection.onPrevious}>
+            <ArrowLeft size={18} aria-hidden="true" /> Previous
+          </button>
+          <span className="preview-count" role="status" aria-atomic="true">
+            <span className="sr-only">{title}, item </span>
+            <strong>{String(collection.index + 1).padStart(2, "0")}</strong>
+            <span aria-hidden="true"> / </span>
+            <span className="sr-only"> of </span>
+            {String(collection.total).padStart(2, "0")}
+          </span>
+          <button type="button" onClick={collection.onNext}>
+            Next <ArrowRight size={18} aria-hidden="true" />
+          </button>
+        </footer>
+      )}
     </dialog>
   );
 }

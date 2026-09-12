@@ -59,9 +59,11 @@ export function SpotlightProjects({
                 </div>
               )}
               <div className="project-caption">
-                <span className="project-number">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
+                {compact && (
+                  <span className="project-number">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                )}
                 <div>
                   {project.video ? (
                     <h3 className="project-title">

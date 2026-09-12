@@ -8,10 +8,13 @@ import type { GalleryImage } from "@/lib/data";
 
 export function GraphicGallery({ images }: { images: GalleryImage[] }) {
   const [selected, setSelected] = useState<GalleryImage | null>(null);
+  const selectedIndex = images.findIndex(
+    (image) => image.src === selected?.src,
+  );
   return (
     <>
       <div className="graphic-gallery">
-        {images.map((image, index) => (
+        {images.map((image) => (
           <button
             type="button"
             key={image.src}
@@ -34,15 +37,30 @@ export function GraphicGallery({ images }: { images: GalleryImage[] }) {
             </div>
             <span className="graphic-caption">
               {image.alt}
-              <small>{String(index + 1).padStart(2, "0")}</small>
             </span>
           </button>
         ))}
       </div>
       {selected && (
-        <PreviewDialog title={selected.alt} onClose={() => setSelected(null)}>
+        <PreviewDialog
+          title={selected.alt}
+          eyebrow="Graphic design"
+          className="graphic-dialog"
+          onClose={() => setSelected(null)}
+          collection={{
+            index: selectedIndex,
+            total: images.length,
+            onPrevious: () =>
+              setSelected(
+                images[(selectedIndex - 1 + images.length) % images.length],
+              ),
+            onNext: () =>
+              setSelected(images[(selectedIndex + 1) % images.length]),
+          }}
+        >
           <div className="graphic-full">
             <Image
+              key={selected.src}
               src={selected.src}
               alt={selected.alt}
               width={1200}

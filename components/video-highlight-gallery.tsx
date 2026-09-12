@@ -8,10 +8,13 @@ import type { VideoItem } from "@/lib/data";
 
 export function VideoHighlightGallery({ videos }: { videos: VideoItem[] }) {
   const [selected, setSelected] = useState<VideoItem | null>(null);
+  const selectedIndex = videos.findIndex(
+    (video) => video.src === selected?.src,
+  );
   return (
     <>
       <div className="film-gallery">
-        {videos.map((video, index) => (
+        {videos.map((video) => (
           <article key={video.src}>
             <button
               className="film-frame"
@@ -32,21 +35,35 @@ export function VideoHighlightGallery({ videos }: { videos: VideoItem[] }) {
                 <Play size={18} fill="currentColor" />
               </span>
             </button>
-            <span className="film-caption">
-              <span>{video.title}</span>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-            </span>
           </article>
         ))}
       </div>
       {selected && (
-        <PreviewDialog title={selected.title} onClose={() => setSelected(null)}>
+        <PreviewDialog
+          title={selected.title}
+          hideTitle
+          eyebrow="Motion / Short-form"
+          className="film-dialog"
+          onClose={() => setSelected(null)}
+          collection={{
+            index: selectedIndex,
+            total: videos.length,
+            onPrevious: () =>
+              setSelected(
+                videos[(selectedIndex - 1 + videos.length) % videos.length],
+              ),
+            onNext: () =>
+              setSelected(videos[(selectedIndex + 1) % videos.length]),
+          }}
+        >
           <video
+            key={selected.src}
             src={selected.src}
             poster={selected.poster}
             controls
             autoPlay
             playsInline
+            aria-label={selected.title}
             className="film-player"
           />
         </PreviewDialog>
