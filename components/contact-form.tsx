@@ -146,7 +146,7 @@ export function ContactForm() {
               name="timeline"
               value={form.timeline}
               onChange={(event) => update("timeline", event.target.value)}
-              placeholder="A date, or just exploring"
+              placeholder="A date, or flexible"
               maxLength={120}
             />
           </label>
