@@ -80,6 +80,12 @@ export default function WhoAmIPage() {
             development, blockchain projects, video editing, and graphic design.
           </p>
           <p>
+            <strong>Less waiting. More doing.</strong> I focus on spotting
+            software bottlenecks early and designing around them, from slow
+            data flows to unnecessary steps. My aim is to build responsive
+            systems that feel effortless to use, even as demands grow.
+          </p>
+          <p>
             That has meant building a booking system at DvCode, working on a
             remittance concept at the Morph Hackathon, and developing V-Chain
             for my thesis. On the creative side, I&apos;ve designed product

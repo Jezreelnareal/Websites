@@ -58,6 +58,7 @@
   font-size: 10px;
 }
 .about-page .about-story {
+  min-height: 80svh;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
   gap: 80px;
   align-items: start;
@@ -105,6 +106,9 @@
   gap: 80px;
   border: 0;
   scroll-margin-top: 110px;
+}
+.about-page #my-toolkit {
+  min-height: 90svh;
 }
 .about-section-note {
   margin-top: 24px;

@@ -5,6 +5,53 @@
   --surface-journey: color-mix(in srgb, var(--bg) 88%, black);
 }
 
+/* Main sections fill a screen and remain free to grow with their content. */
+:is(
+  .certificate-highlights,
+  .work-section,
+  .creative-section,
+  .home-journey,
+  .work-page .spotlight-intro,
+  .work-page .work-category,
+  .about-page .about-intro,
+  .about-page .about-story,
+  .about-page .resume-section,
+  .contact-page .contact-layout
+) {
+  min-height: 100svh;
+}
+
+.certificate-collection-intro {
+  min-height: 60svh;
+}
+
+.certificate-highlights,
+.certificate-collection-intro,
+.work-page .work-category {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+:is(
+  .home-journey,
+  .work-page .spotlight-intro,
+  .about-page .about-intro,
+  .about-page .about-story,
+  .about-page .resume-section,
+  .contact-page .contact-layout
+) {
+  align-content: center;
+}
+
+@media (max-height: 740px),
+  (max-width: 360px),
+  (prefers-reduced-motion: reduce) {
+  .certificates-page .certificate-chapter {
+    min-height: 100svh;
+  }
+}
+
 /* Extend each section's surface to the viewport without changing content widths
    or introducing an overflow container that would break sticky elements. */
 :is(
