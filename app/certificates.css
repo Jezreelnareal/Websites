@@ -211,9 +211,7 @@
 }
 @media (prefers-reduced-motion: no-preference) {
   .chapter-backdrop-title {
-    filter: blur(
-      calc(8px * clamp(0, calc(var(--chapter-progress) * 2.5), 1))
-    );
+    filter: blur(calc(8px * clamp(0, calc(var(--chapter-progress) * 2.5), 1)));
     transition: filter 180ms ease-out;
   }
   .chapter-canvas[data-ready="true"] canvas {
@@ -661,7 +659,11 @@
   margin-top: 40px;
 }
 .certificates-page .certificate-journey {
+  padding-top: 0;
+}
+.certificate-collection-intro {
   padding-top: 150px;
+  padding-bottom: 64px;
 }
 .certificates-page .journey-header h1 {
   font-size: clamp(38px, 5.5vw, 80px);
@@ -699,8 +701,7 @@
     padding-inline: 0;
     max-width: none;
   }
-  .certificates-page .certificate-journey {
+  .certificate-collection-intro {
     padding-top: 120px;
   }
 }
-

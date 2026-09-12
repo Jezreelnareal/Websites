@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 import { CertificateChapter } from "@/components/certificate-showcase";
 import { certificates } from "@/lib/certificates";
 
@@ -52,12 +50,6 @@ export function CertificateHighlights() {
           ) : null;
         })}
       </div>
-      <Link
-        href="/certificates"
-        className="text-link certificate-highlights-link"
-      >
-        Explore my certificates <ArrowUpRight size={18} />
-      </Link>
     </section>
   );
 }
