@@ -139,6 +139,9 @@
   color: var(--paper);
 }
 .contact-verification-widget {
+  min-height: 65px;
+}
+.contact-verification-widget[data-size="compact"] {
   min-height: 140px;
 }
 .contact-verification > [role="status"] {

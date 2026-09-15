@@ -9,7 +9,7 @@ type TurnstileApi = {
     options: {
       sitekey: string;
       theme: "dark";
-      size: "compact";
+      size: "compact" | "flexible";
       action: string;
       callback: (token: string) => void;
       "expired-callback": () => void;
@@ -42,37 +42,60 @@ export function TurnstileVerification({
   useEffect(() => {
     const api = window.turnstile;
     if (!ready || !siteKey || !container.current || !api) return;
+    const element = container.current;
     let active = true;
-    const invalidate = (message: string) => {
-      if (!active) return;
-      onToken("");
-      setNotice(message);
-    };
-    const widget = api.render(container.current, {
-      sitekey: siteKey,
-      theme: "dark",
-      size: "compact",
-      action: "contact",
-      "response-field": false,
-      "refresh-expired": "auto",
-      "refresh-timeout": "auto",
-      callback: (token) => {
-        if (!active) return;
-        onToken(token);
-        setNotice("Verified. You can send your message.");
-      },
-      "expired-callback": () =>
-        invalidate("Verification expired. Please verify again."),
-      "timeout-callback": () =>
-        invalidate("Verification timed out. Please try again."),
-      "error-callback": () =>
+    let widget: string | undefined;
+    let currentSize: "compact" | "flexible" | undefined;
+    let generation = 0;
+    const observer = new ResizeObserver(() => {
+      const size = element.clientWidth >= 300 ? "flexible" : "compact";
+      if (!active || size === currentSize) return;
+      currentSize = size;
+      const currentGeneration = ++generation;
+      const isCurrent = () => active && currentGeneration === generation;
+      const invalidate = (message: string) => {
+        if (!isCurrent()) return;
+        onToken("");
+        setNotice(message);
+      };
+      if (widget !== undefined) api.remove(widget);
+      widget = undefined;
+      element.dataset.size = size;
+      invalidate("Complete the verification below before sending.");
+      try {
+        widget = api.render(element, {
+          sitekey: siteKey,
+          theme: "dark",
+          size,
+          action: "contact",
+          "response-field": false,
+          "refresh-expired": "auto",
+          "refresh-timeout": "auto",
+          callback: (token) => {
+            if (!isCurrent()) return;
+            onToken(token);
+            setNotice("Verified. You can send your message.");
+          },
+          "expired-callback": () =>
+            invalidate("Verification expired. Please verify again."),
+          "timeout-callback": () =>
+            invalidate("Verification timed out. Please try again."),
+          "error-callback": () =>
+            invalidate(
+              "Verification could not complete. Check your connection and try again, or email me directly.",
+            ),
+        });
+      } catch {
         invalidate(
-          "Verification could not complete. Check your connection and try again, or email me directly.",
-        ),
+          "Verification could not load. Please try again or email me directly.",
+        );
+      }
     });
+    observer.observe(element);
     return () => {
       active = false;
-      api.remove(widget);
+      observer.disconnect();
+      if (widget !== undefined) api.remove(widget);
     };
   }, [ready, siteKey, onToken]);
 
