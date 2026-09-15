@@ -141,7 +141,7 @@ const buildHtmlEmail = (payload: ContactPayload) => `
                     <p style="margin:0; color:#e8e5dc; font-size:15px; line-height:26px; overflow-wrap:anywhere; word-wrap:break-word;">${escapeHtml(payload.message).replace(/\r\n|\r|\n/g, "<br />")}</p>
                   </td></tr>
                   <tr><td style="padding:20px 0 0;">
-                    <a href="${escapeHtml(buildReplyLink(payload))}" style="display:inline-block; padding:10px 0; color:#d9c5a3; font-size:14px; font-weight:bold; line-height:24px; text-decoration:underline;">Reply to sender &nbsp; &#8599;</a>
+                    <a href="mailto:${escapeHtml(encodeURIComponent(payload.email))}" style="display:inline-block; padding:10px 0; color:#d9c5a3; font-size:14px; font-weight:bold; line-height:24px; text-decoration:underline;">Reply to sender &nbsp; &#8599;</a>
                   </td></tr>
                 </table>
               </td>
