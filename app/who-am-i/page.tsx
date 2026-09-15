@@ -15,7 +15,7 @@ import { createPageMetadata } from "@/lib/seo";
 import "./about.css";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "About",
+  title: "Who Am I?",
   description:
     "Get to know Jezreel Borlongan: web development, computer engineering, blockchain projects, and visual work in Bulacan, Philippines.",
   path: "/who-am-i",

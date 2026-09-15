@@ -11,7 +11,7 @@ import { experienceEntries, webProjects } from "@/lib/data";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Web Developer & Creative",
+  title: "Home",
   description:
     "Jezreel Borlongan's selected work in web development, blockchain, video, and graphic design. Based in Bulacan, Philippines.",
   path: "/",

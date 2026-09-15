@@ -5,7 +5,7 @@ import { CertificateShowcase } from "@/components/certificate-showcase";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Certificates & Milestones",
+  title: "Certificates",
   description:
     "Explore Jezreel Borlongan's AWS training badge, Trend Micro certificate, and programming and hackathon experiences, with contributions and credential links.",
   path: "/certificates",

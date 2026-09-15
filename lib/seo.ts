@@ -39,7 +39,7 @@ export function createPageMetadata({
   path
 }: PageSeo): Metadata {
   return {
-    title,
+    title: { absolute: `${title} | ${authorName}` },
     description,
     alternates: {
       canonical: path

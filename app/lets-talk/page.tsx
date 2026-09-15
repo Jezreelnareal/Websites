@@ -6,7 +6,7 @@ import { createPageMetadata } from "@/lib/seo";
 import "./contact.css";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Contact",
+  title: "Let's Talk",
   description:
     "Contact Jezreel Borlongan about web development, visual work, or a collaboration.",
   path: "/lets-talk",

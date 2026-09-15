@@ -8,7 +8,7 @@ import { createPageMetadata } from "@/lib/seo";
 import "./spotlights.css";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Selected Work",
+  title: "Spotlights",
   description:
     "Websites, blockchain projects, product graphics, and short-form videos by Jezreel Borlongan.",
   path: "/spotlights",
