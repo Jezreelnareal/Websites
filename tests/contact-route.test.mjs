@@ -151,3 +151,30 @@ test("email-provider failure still returns retryable feedback after verification
   );
   assert.equal((await post(request(payload))).status, 502);
 });
+
+test("inquiry email escapes submitted content and preserves message line breaks", async () => {
+  const submitted = {
+    ...payload,
+    name: '<img src=x onerror="alert(1)">',
+    projectType: "Design & development",
+    timeline: "<next month>",
+    message: '<script>alert("hello")</script>\nSecond line & details',
+  };
+  let email;
+  const post = handler(async (url, options) => {
+    if (url.includes("siteverify")) {
+      return Response.json({ success: true, action: "contact" });
+    }
+    email = JSON.parse(options.body);
+    return Response.json({ id: "mock-email" });
+  });
+  assert.equal((await post(request(submitted))).status, 200);
+  assert.ok(!email.html.includes("<script>"));
+  assert.ok(!email.html.includes("<img src=x"));
+  assert.ok(email.html.includes("&lt;img src=x onerror=&quot;alert(1)&quot;&gt;"));
+  assert.ok(email.html.includes("Design &amp; development"));
+  assert.ok(email.html.includes("&lt;next month&gt;"));
+  assert.ok(email.html.includes("&lt;/script&gt;<br />Second line &amp; details"));
+  assert.ok(email.text.includes(submitted.message));
+  assert.equal(email.reply_to, submitted.email);
+});
