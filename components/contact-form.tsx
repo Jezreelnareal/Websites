@@ -10,6 +10,8 @@ const initialForm = {
   projectType: "Website / Web App",
   timeline: "",
   message: "",
+  preferredDate: "",
+  preferredTime: "",
 };
 const projectTypes = [
   "Website / Web App",
@@ -22,6 +24,8 @@ const projectTypes = [
 ];
 
 export function ContactForm() {
+  const [intent, setIntent] = useState<"inquiry" | "appointment">("inquiry");
+  const isAppointment = intent === "appointment";
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState<{
     type: "success" | "error";
@@ -53,6 +57,21 @@ export function ContactForm() {
       });
       return;
     }
+    if (isAppointment) {
+      const requestedTime = new Date(
+        `${form.preferredDate}T${form.preferredTime}:00+08:00`,
+      );
+      if (
+        !Number.isFinite(requestedTime.getTime()) ||
+        requestedTime.getTime() <= Date.now()
+      ) {
+        setStatus({
+          type: "error",
+          message: "Choose a future date and time in Philippine time (UTC+8).",
+        });
+        return;
+      }
+    }
     setIsSending(true);
     setStatus(null);
     setTurnstileToken("");
@@ -60,7 +79,7 @@ export function ContactForm() {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, turnstileToken }),
+        body: JSON.stringify({ ...form, intent, turnstileToken }),
       });
       const result = await response.json().catch(() => null);
       if (!response.ok)
@@ -71,7 +90,9 @@ export function ContactForm() {
       setForm(initialForm);
       setStatus({
         type: "success",
-        message: "Message sent. Thanks for getting in touch!",
+        message: isAppointment
+          ? "Call request sent — pending confirmation. I'll email you to agree on a time and share the meeting link."
+          : "Message sent. Thanks for getting in touch!",
       });
     } catch (error) {
       setStatus({
@@ -91,7 +112,11 @@ export function ContactForm() {
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(
-        `Name: ${form.name}\nEmail: ${form.email}\nProject: ${form.projectType}\nTimeline: ${form.timeline || "Not specified"}\n\n${form.message}`,
+        `Name: ${form.name}\nEmail: ${form.email}\nProject: ${form.projectType}\n${
+          isAppointment
+            ? `Call request: ${form.preferredDate} at ${form.preferredTime} (Philippine time, UTC+8), 30 minutes, pending confirmation`
+            : `Timeline: ${form.timeline || "Not specified"}`
+        }\n\n${form.message}`,
       );
       setCopied(true);
     } catch {
@@ -103,6 +128,42 @@ export function ContactForm() {
   };
   return (
     <form className="contact-form" onSubmit={submit}>
+      <div
+        className="contact-intent"
+        role="group"
+        aria-label="How would you like to connect?"
+      >
+        {(
+          [
+            ["inquiry", "Send an inquiry"],
+            ["appointment", "Request a call"],
+          ] as const
+        ).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={intent === value}
+            disabled={isSending}
+            onClick={() => {
+              if (intent === value) return;
+              setIntent(value);
+              setStatus(null);
+              setCopied(false);
+              setTurnstileToken("");
+              setVerificationAttempt((attempt) => attempt + 1);
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {isAppointment && (
+        <div className="appointment-note">
+          <strong>A 30-minute introduction.</strong>A little time to meet,
+          explore your idea, and see how I can help. Suggest a time below. I&apos;ll
+          confirm availability and send a meeting link by email.
+        </div>
+      )}
       <p className="form-intro">
         A few details to get started.<span>* Required</span>
       </p>
@@ -151,26 +212,74 @@ export function ContactForm() {
               ))}
             </select>
           </div>
-          <label htmlFor="timeline">
-            Timeline <span>(optional)</span>
-            <input
-              id="timeline"
-              name="timeline"
-              value={form.timeline}
-              onChange={(event) => update("timeline", event.target.value)}
-              placeholder="A date, or flexible"
-              maxLength={120}
-            />
-          </label>
+          {!isAppointment && (
+            <label htmlFor="timeline">
+              Timeline <span>(optional)</span>
+              <input
+                id="timeline"
+                name="timeline"
+                value={form.timeline}
+                onChange={(event) => update("timeline", event.target.value)}
+                placeholder="A date, or flexible"
+                maxLength={120}
+              />
+            </label>
+          )}
         </div>
+        {isAppointment && (
+          <>
+            <div className="form-pair">
+              <label htmlFor="preferred-date">
+                Preferred date *
+                <input
+                  id="preferred-date"
+                  name="preferredDate"
+                  type="date"
+                  value={form.preferredDate}
+                  onChange={(event) =>
+                    update("preferredDate", event.target.value)
+                  }
+                  aria-describedby="appointment-timezone"
+                  required
+                />
+              </label>
+              <label htmlFor="preferred-time">
+                Preferred time *
+                <input
+                  id="preferred-time"
+                  name="preferredTime"
+                  type="time"
+                  value={form.preferredTime}
+                  onChange={(event) =>
+                    update("preferredTime", event.target.value)
+                  }
+                  aria-describedby="appointment-timezone"
+                  required
+                />
+              </label>
+            </div>
+            <p className="appointment-timezone" id="appointment-timezone">
+              Philippine time (UTC+8) · 30 minutes
+              <br />
+              This is a request. Your appointment is pending until I confirm it
+              by email.
+            </p>
+          </>
+        )}
         <label htmlFor="message">
-          Tell me about it *
+          {isAppointment
+            ? "What would you like to discuss? *"
+            : "Tell me about it *"}
           <textarea
             id="message"
             name="message"
             value={form.message}
             onChange={(event) => update("message", event.target.value)}
-            placeholder="The idea, what you need help with, and anything else I should know."
+            placeholder={
+              isAppointment
+                ? "A little about your idea and what you'd like to cover on our call."
+                : "The idea, what you need help with, and anything else I should know."
+            }
             rows={5}
             maxLength={3000}
             required
@@ -187,7 +296,11 @@ export function ContactForm() {
             disabled={isSending || !turnstileToken}
             aria-describedby="contact-verification-status"
           >
-            {isSending ? "Sending…" : "Send message"}
+            {isSending
+              ? "Sending…"
+              : isAppointment
+                ? "Request a call"
+                : "Send message"}
             {isSending ? (
               <LoaderCircle
                 size={20}
@@ -198,7 +311,9 @@ export function ContactForm() {
               <ArrowUpRight size={20} aria-hidden="true" />
             )}
           </button>
-          <span>No long brief needed.</span>
+          <span>
+            {isAppointment ? "I'll confirm by email." : "No long brief needed."}
+          </span>
         </div>
       </fieldset>
       <div aria-live="polite" aria-atomic="true" className="form-status">

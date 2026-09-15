@@ -8,7 +8,7 @@ import "./contact.css";
 export const metadata: Metadata = createPageMetadata({
   title: "Let's Talk",
   description:
-    "Contact Jezreel Borlongan about web development, visual work, or a collaboration.",
+    "Start a conversation with Jezreel Borlongan about web development, visual work, or a collaboration. Send an inquiry or arrange a call.",
   path: "/lets-talk",
 });
 
@@ -28,7 +28,7 @@ export default function LetsTalkPage() {
           </header>
           <p className="contact-invitation">
             A website, a video, or something still taking shape. Tell me a
-            little about it and how I can help.
+            little about it, or let&apos;s find a time to talk it through.
           </p>
           <div className="contact-direct">
             <span className="eyebrow">Email me</span>
@@ -75,7 +75,7 @@ export default function LetsTalkPage() {
           <header className="contact-form-heading">
             <span className="eyebrow">Your project starts here</span>
             <h2 id="contact-form-title">
-              Send a <em>message.</em>
+              Let&apos;s make a <em>connection.</em>
             </h2>
           </header>
           <ContactForm />

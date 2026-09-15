@@ -6,6 +6,7 @@ type ContactPayload = {
   projectType: string;
   timeline?: string;
   message: string;
+  appointment?: string;
 };
 
 const resendApiUrl = "https://api.resend.com/emails";
@@ -25,12 +26,23 @@ const normalizeText = (value: unknown, maxLength: number) => {
 
 const buildTextEmail = (payload: ContactPayload) =>
   [
+    payload.appointment
+      ? "CALL REQUEST — PENDING CONFIRMATION"
+      : "NEW PROJECT INQUIRY",
+    "",
     `Name: ${payload.name}`,
     `Email: ${payload.email}`,
     `Project Type: ${payload.projectType}`,
-    `Timeline: ${payload.timeline || "Not specified"}`,
+    ...(payload.appointment
+      ? [
+          `Requested call: ${payload.appointment}`,
+          "Status: Pending confirmation. Reply to agree on a time and share a meeting link.",
+        ]
+      : payload.timeline
+        ? [`Timeline: ${payload.timeline}`]
+        : []),
     "",
-    "Message:",
+    payload.appointment ? "Discussion topic:" : "Message:",
     payload.message,
   ].join("\n");
 
@@ -48,26 +60,34 @@ const buildHtmlEmail = (payload: ContactPayload) => `
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>New portfolio inquiry</title>
+    <title>${payload.appointment ? "New call request" : "New portfolio inquiry"}</title>
   </head>
   <body style="margin:0; padding:0; background-color:#0e0f0f; color:#e8e5dc; font-family:Arial, Helvetica, sans-serif; -webkit-text-size-adjust:100%;">
-    <div style="display:none; max-height:0; overflow:hidden; opacity:0; mso-hide:all;">A new inquiry from ${escapeHtml(payload.name)} about ${escapeHtml(payload.projectType)}.</div>
+    <div style="display:none; max-height:0; overflow:hidden; opacity:0; mso-hide:all;">${escapeHtml(payload.name)} · ${escapeHtml(payload.appointment || payload.projectType)}${payload.appointment ? " · Pending confirmation" : ""}</div>
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#0e0f0f" style="background-color:#0e0f0f;">
       <tr>
-        <td align="center" style="padding:32px 16px;">
+        <td align="center" style="padding:24px 12px;">
           <!--[if mso]><table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0"><tr><td><![endif]-->
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; table-layout:fixed;">
             <tr>
-              <td style="padding:0 8px 28px;">
-                <p style="margin:0; color:#d9c5a3; font-size:15px; font-weight:bold; line-height:24px;">Jezreel Borlongan<span style="color:#a5a6a0; font-weight:normal;"> / Portfolio</span></p>
-              </td>
-            </tr>
-            <tr>
-              <td bgcolor="#191b19" style="background-color:#191b19; border:1px solid #333630; border-radius:16px; padding:32px 24px; overflow-wrap:anywhere; word-wrap:break-word;">
-                <p style="margin:0 0 18px; color:#d9c5a3; font-size:11px; font-weight:bold; letter-spacing:2px; line-height:18px; text-transform:uppercase;">Let's talk / New inquiry</p>
-                <h1 style="margin:0 0 14px; color:#e8e5dc; font-size:32px; font-weight:normal; line-height:40px;">A new idea.<br /><em style="color:#d9c5a3; font-family:Georgia, 'Times New Roman', serif; font-size:40px; line-height:48px;">A new connection.</em></h1>
-                <p style="margin:0 0 28px; color:#a5a6a0; font-size:14px; line-height:24px;">Someone reached out through your portfolio. Here are the details.</p>
+              <td bgcolor="#191b19" style="background-color:#191b19; border:1px solid #333630; border-radius:12px; padding:24px 20px; overflow-wrap:anywhere; word-wrap:break-word;">
+                <p style="margin:0 0 8px; color:#d9c5a3; font-size:11px; letter-spacing:1px; line-height:18px; text-transform:uppercase;">Portfolio / Let's talk</p>
+                <h1 style="margin:0 0 24px; color:#e8e5dc; font-size:26px; font-weight:bold; line-height:34px;">${payload.appointment ? "Call request" : "New project inquiry"}</h1>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
+                  ${
+                    payload.appointment
+                      ? `<tr><td style="padding:0 0 24px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;"><tr>
+                      <td bgcolor="#0e0f0f" style="padding:16px; background-color:#0e0f0f; border-left:2px solid #d9c5a3; border-radius:6px;">
+                        <p style="margin:0 0 8px; color:#d9c5a3; font-size:12px; font-weight:bold; line-height:20px;">Pending confirmation</p>
+                        <p style="margin:0 0 4px; color:#a5a6a0; font-size:12px; line-height:20px;">Requested date &amp; time</p>
+                        <p style="margin:0; color:#e8e5dc; font-size:16px; font-weight:bold; line-height:26px;">${escapeHtml(payload.appointment)}</p>
+                        <p style="margin:12px 0 0; color:#a5a6a0; font-size:13px; line-height:22px;">Reply to confirm or suggest another time. Include a meeting link when confirming.</p>
+                      </td>
+                    </tr></table>
+                  </td></tr>`
+                      : ""
+                  }
                   <tr><td style="padding:0 0 18px;">
                     <p style="margin:0 0 5px; color:#a5a6a0; font-size:11px; letter-spacing:1px; line-height:18px; text-transform:uppercase;">From</p>
                     <p style="margin:0; color:#e8e5dc; font-size:18px; font-weight:bold; line-height:26px;">${escapeHtml(payload.name)}</p>
@@ -77,28 +97,28 @@ const buildHtmlEmail = (payload: ContactPayload) => `
                     <p style="margin:0 0 5px; color:#a5a6a0; font-size:11px; letter-spacing:1px; line-height:18px; text-transform:uppercase;">Project</p>
                     <p style="margin:0; color:#e8e5dc; font-size:15px; line-height:24px;">${escapeHtml(payload.projectType)}</p>
                   </td></tr>
-                  <tr><td style="padding:0 0 26px;">
+                  ${
+                    !payload.appointment && payload.timeline
+                      ? `<tr><td style="padding:0 0 18px;">
                     <p style="margin:0 0 5px; color:#a5a6a0; font-size:11px; letter-spacing:1px; line-height:18px; text-transform:uppercase;">Timeline</p>
-                    <p style="margin:0; color:#e8e5dc; font-size:15px; line-height:24px;">${escapeHtml(payload.timeline || "Not specified")}</p>
-                  </td></tr>
-                  <tr><td bgcolor="#0e0f0f" style="padding:20px; background-color:#0e0f0f; border-radius:10px; border-left:2px solid #d9c5a3;">
-                    <p style="margin:0 0 12px; color:#d9c5a3; font-size:11px; letter-spacing:1px; line-height:18px; text-transform:uppercase;">The idea</p>
+                    <p style="margin:0; color:#e8e5dc; font-size:15px; line-height:24px;">${escapeHtml(payload.timeline)}</p>
+                  </td></tr>`
+                      : ""
+                  }
+                  <tr><td bgcolor="#0e0f0f" style="padding:16px; background-color:#0e0f0f; border-radius:6px;">
+                    <p style="margin:0 0 10px; color:#a5a6a0; font-size:11px; letter-spacing:1px; line-height:18px; text-transform:uppercase;">${payload.appointment ? "Discussion topic" : "Message"}</p>
                     <p style="margin:0; color:#e8e5dc; font-size:15px; line-height:26px; overflow-wrap:anywhere; word-wrap:break-word;">${escapeHtml(payload.message).replace(/\r\n|\r|\n/g, "<br />")}</p>
                   </td></tr>
-                  <tr><td style="padding:28px 0 0;">
+                  <tr><td style="padding:20px 0 0;">
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0"><tr>
                       <td bgcolor="#d9c5a3" style="background-color:#d9c5a3; border-radius:6px; text-align:center; mso-padding-alt:16px 24px;">
-                        <a href="mailto:${escapeHtml(encodeURIComponent(payload.email))}" style="display:inline-block; padding:16px 24px; color:#0e0f0f; font-size:14px; font-weight:bold; line-height:20px; text-decoration:none;">Reply to inquiry &nbsp; &#8599;</a>
+                        <a href="mailto:${escapeHtml(encodeURIComponent(payload.email))}" style="display:inline-block; padding:16px 24px; color:#0e0f0f; font-size:14px; font-weight:bold; line-height:20px; text-decoration:none;">Reply to sender &nbsp; &#8599;</a>
                       </td>
                     </tr></table>
-                    <p style="margin:14px 0 0; color:#a5a6a0; font-size:12px; line-height:20px;">You can also reply directly to this email to reach the sender.</p>
                   </td></tr>
                 </table>
               </td>
             </tr>
-            <tr><td style="padding:24px 8px 0;">
-              <p style="margin:0; color:#a5a6a0; font-size:12px; line-height:20px;">Jezreel Borlongan<br />Web Designer &amp; Developer</p>
-            </td></tr>
           </table>
           <!--[if mso]></td></tr></table><![endif]-->
         </td>
@@ -140,6 +160,17 @@ export async function POST(request: Request) {
     );
   }
 
+  if (
+    body.intent !== undefined &&
+    body.intent !== "inquiry" &&
+    body.intent !== "appointment"
+  ) {
+    return NextResponse.json(
+      { message: "Please choose an inquiry or a call request." },
+      { status: 400 },
+    );
+  }
+
   const payload: ContactPayload = {
     name: normalizeText(body.name, 120),
     email: normalizeText(body.email, 180),
@@ -160,6 +191,42 @@ export async function POST(request: Request) {
       { message: "Please enter a valid email address." },
       { status: 400 },
     );
+  }
+
+  if (body.intent === "appointment") {
+    const date =
+      typeof body.preferredDate === "string" ? body.preferredDate : "";
+    const time =
+      typeof body.preferredTime === "string" ? body.preferredTime : "";
+    const requested = new Date(`${date}T${time}:00+08:00`);
+    const timestamp = requested.getTime();
+    // Compare the wall-clock date too: JavaScript otherwise normalizes dates such as February 30.
+    if (
+      !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+      !/^\d{2}:\d{2}$/.test(time) ||
+      !Number.isFinite(timestamp) ||
+      timestamp <= Date.now() ||
+      new Date(timestamp + 8 * 60 * 60 * 1000).toISOString().slice(0, 16) !==
+        `${date}T${time}`
+    ) {
+      return NextResponse.json(
+        {
+          message:
+            "Choose a valid future date and time in Philippine time (UTC+8).",
+        },
+        { status: 400 },
+      );
+    }
+    payload.appointment = `${new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Manila",
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(requested)} (Philippine time, UTC+8) · 30 minutes`;
   }
 
   const token = body.turnstileToken;
@@ -204,7 +271,7 @@ export async function POST(request: Request) {
 
   const toEmail = process.env.CONTACT_TO_EMAIL || fallbackToEmail;
   const fromEmail = process.env.RESEND_FROM_EMAIL || defaultFromEmail;
-  const subject = `Project Inquiry from ${payload.name}`;
+  const subject = `${payload.appointment ? "Call Request" : "Project Inquiry"} from ${payload.name}`;
 
   const resendResponse = await fetch(resendApiUrl, {
     method: "POST",
@@ -232,5 +299,9 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ message: "Message sent successfully." });
+  return NextResponse.json({
+    message: payload.appointment
+      ? "Call request sent. Pending confirmation by email."
+      : "Message sent successfully.",
+  });
 }

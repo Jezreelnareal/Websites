@@ -104,6 +104,20 @@ Implementation reference: [Cloudflare server-side validation](https://developers
 
 Run the contact endpoint's isolated verification tests with `node --test tests/contact-route.test.mjs`. These mock Cloudflare and Resend; they never send email.
 
+### Call requests
+
+On `/lets-talk`, visitors can choose **Send an inquiry** or **Request a call**.
+A call request is for a 30-minute introduction, with the preferred date and time
+explicitly entered in **Philippine time (Asia/Manila, UTC+8)**. Both the form and
+the API reject past times; the API also rejects invalid dates.
+
+Requests use the same Cloudflare verification and Resend configuration as inquiries.
+You receive a styled **Call Request** email with the proposed time, discussion topic,
+and the visitor's reply-to address. Reply manually to agree on a time and provide
+the meeting link. The form and email label requests as **pending confirmation**.
+There is no automatic booking, calendar reservation, or visitor confirmation email.
+No additional environment variables or calendar account are required.
+
 ## Certificate showcase
 
 The section directly after the homepage hero previews AWS and Trend Micro at
