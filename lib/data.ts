@@ -195,6 +195,7 @@ export const skillGroups: SkillGroup[] = [
     title: "Technical Skills",
     items: [
       "HTML/CSS (Intermediate)",
+      "Tailwind CSS",
       "JavaScript, Java, and C++ (Basic)",
       "React JS (Basic)",
       "Next.js (Basic)",
