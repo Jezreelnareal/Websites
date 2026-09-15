@@ -118,6 +118,13 @@ the meeting link. The form and email label requests as **pending confirmation**.
 There is no automatic booking, calendar reservation, or visitor confirmation email.
 No additional environment variables or calendar account are required.
 
+The **Reply to sender** link opens your configured email app with the recipient,
+subject, and a draft message filled in. Call drafts include the requested date,
+time, timezone, duration, and a meeting-link placeholder. Review the proposed time,
+replace the placeholder with your meeting link, and send the reply to confirm.
+Inquiry drafts include the project and any supplied timeline, with space for your
+response. Opening the link does not send anything or reserve an appointment.
+
 ## Certificate showcase
 
 The section directly after the homepage hero previews AWS and Trend Micro at

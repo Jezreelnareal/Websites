@@ -50,6 +50,11 @@ const request = (body) =>
 const noNetwork = () => {
   assert.fail("Unexpected network request");
 };
+const replyDraft = (html) => {
+  const match = html.match(/href="([^"]+)"[^>]*>Reply to sender/);
+  assert.ok(match, "Reply link must be present");
+  return new URL(match[1].replaceAll("&amp;", "&").replaceAll("&#39;", "'"));
+};
 
 test("missing configuration blocks sending", async () => {
   for (const env of [
@@ -223,6 +228,25 @@ test("verified call requests include Philippine time and stay pending without bo
     assert.equal(url, "https://api.resend.com/emails");
     assert.equal(email.subject, "Call Request from Test");
     assert.equal(email.reply_to, payload.email);
+    const draft = replyDraft(email.html);
+    assert.equal(draft.protocol, "mailto:");
+    assert.equal(decodeURIComponent(draft.pathname), payload.email);
+    assert.equal(
+      draft.searchParams.get("subject"),
+      "Re: Your call request | Jezreel Borlongan",
+    );
+    const message = draft.searchParams.get("body");
+    assert.ok(message.startsWith("Hi Test,\r\n"));
+    assert.ok(message.includes("confirm our introductory call"));
+    assert.ok(message.includes("3:30 PM"));
+    assert.ok(message.includes("Philippine time, UTC+8"));
+    assert.ok(message.includes("30 minutes"));
+    assert.ok(
+      message.includes(
+        "Meeting link: [Add your Google Meet or Zoom link here]",
+      ),
+    );
+    assert.ok(message.includes("Jezreel Borlongan"));
     for (const body of [email.html, email.text]) {
       assert.ok(body.includes("Philippine time, UTC+8"));
       assert.ok(body.includes("3:30 PM"));
@@ -268,4 +292,37 @@ test("call requests require successful Cloudflare verification", async () => {
     ).status,
     400,
   );
+});
+
+test("inquiry reply draft safely encodes recipient, subject, and message", async () => {
+  const submitted = {
+    ...payload,
+    name: "Alex & Jamie",
+    email: "alex+studio@example.com",
+    projectType:
+      "Design & development?cc=another@example.com\r\nBcc: nobody@example.com",
+    timeline: "October & November",
+  };
+  const post = handler(async (url, options) => {
+    if (url.includes("siteverify"))
+      return Response.json({ success: true, action: "contact" });
+    const email = JSON.parse(options.body);
+    const draft = replyDraft(email.html);
+    assert.equal(decodeURIComponent(draft.pathname), submitted.email);
+    assert.deepEqual([...draft.searchParams.keys()], ["subject", "body"]);
+    assert.equal(
+      draft.searchParams.get("subject"),
+      `Re: ${submitted.projectType.replace(/[\r\n]+/g, " ")} inquiry`,
+    );
+    assert.ok(!/[\r\n]/.test(draft.searchParams.get("subject")));
+    const message = draft.searchParams.get("body");
+    assert.ok(message.startsWith("Hi Alex & Jamie,\r\n\r\n"));
+    assert.ok(message.includes("Your preferred timeline: October & November"));
+    assert.ok(
+      message.includes("[Add your response and suggested next steps here]"),
+    );
+    assert.ok(!message.includes("confirm our introductory call"));
+    return Response.json({ id: "mock-email" });
+  });
+  assert.equal((await post(request(submitted))).status, 200);
 });
