@@ -126,6 +126,27 @@
   min-width: 180px;
   border-radius: 5px;
 }
+.contact-page .send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.contact-verification {
+  margin-top: 24px;
+}
+.contact-verification-label {
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: var(--paper);
+}
+.contact-verification-widget {
+  min-height: 140px;
+}
+.contact-verification > [role="status"] {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
 .contact-page .send-button .send-spinner {
   transform: none;
 }

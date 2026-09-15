@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { ArrowUpRight, CheckCircle2, Copy, LoaderCircle } from "lucide-react";
+import { TurnstileVerification } from "@/components/turnstile-verification";
 
 const initialForm = {
   name: "",
@@ -28,6 +29,8 @@ export function ContactForm() {
   } | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [verificationAttempt, setVerificationAttempt] = useState(0);
   const update = (field: keyof typeof form, value: string) => {
     setForm((previous) => ({ ...previous, [field]: value }));
     setStatus(null);
@@ -36,6 +39,13 @@ export function ContactForm() {
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSending) return;
+    if (!turnstileToken) {
+      setStatus({
+        type: "error",
+        message: "Please complete the verification before sending.",
+      });
+      return;
+    }
     if (!form.name.trim() || !form.message.trim()) {
       setStatus({
         type: "error",
@@ -45,19 +55,18 @@ export function ContactForm() {
     }
     setIsSending(true);
     setStatus(null);
+    setTurnstileToken("");
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, turnstileToken }),
       });
       const result = await response.json().catch(() => null);
       if (!response.ok)
         throw new Error(
-          response.status === 503
-            ? "The form is unavailable right now. Please email me directly."
-            : result?.message ||
-                "Couldn't send your message. Try again or email me directly.",
+          result?.message ||
+            "Couldn't send your message. Try again or email me directly.",
         );
       setForm(initialForm);
       setStatus({
@@ -74,6 +83,9 @@ export function ContactForm() {
       });
     } finally {
       setIsSending(false);
+      // Cloudflare tokens are single-use, including attempts where email fails.
+      setTurnstileToken("");
+      setVerificationAttempt((attempt) => attempt + 1);
     }
   };
   const copy = async () => {
@@ -164,8 +176,17 @@ export function ContactForm() {
             required
           />
         </label>
+        <TurnstileVerification
+          key={verificationAttempt}
+          onToken={setTurnstileToken}
+        />
         <div className="form-actions">
-          <button type="submit" className="send-button">
+          <button
+            type="submit"
+            className="send-button"
+            disabled={isSending || !turnstileToken}
+            aria-describedby="contact-verification-status"
+          >
             {isSending ? "Sending…" : "Send message"}
             {isSending ? (
               <LoaderCircle

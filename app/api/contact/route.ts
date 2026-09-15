@@ -31,7 +31,7 @@ const buildTextEmail = (payload: ContactPayload) =>
     `Timeline: ${payload.timeline || "Not specified"}`,
     "",
     "Message:",
-    payload.message
+    payload.message,
   ].join("\n");
 
 const escapeHtml = (value: string) =>
@@ -49,7 +49,7 @@ const buildHtmlEmail = (payload: ContactPayload) => `
     <p><strong>Email:</strong> ${escapeHtml(payload.email)}</p>
     <p><strong>Project Type:</strong> ${escapeHtml(payload.projectType)}</p>
     <p><strong>Timeline:</strong> ${escapeHtml(
-      payload.timeline || "Not specified"
+      payload.timeline || "Not specified",
     )}</p>
     <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
     <p style="white-space: pre-wrap;">${escapeHtml(payload.message)}</p>
@@ -58,14 +58,15 @@ const buildHtmlEmail = (payload: ContactPayload) => `
 
 export async function POST(request: Request) {
   const apiKey = process.env.RESEND_API_KEY;
+  const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
 
-  if (!apiKey) {
+  if (!apiKey || !turnstileSecret) {
     return NextResponse.json(
       {
         message:
-          "The contact form is not configured yet. Add RESEND_API_KEY to enable direct sending."
+          "The contact form is unavailable right now. Please email me directly.",
       },
-      { status: 503 }
+      { status: 503 },
     );
   }
 
@@ -76,7 +77,14 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json(
       { message: "Invalid form submission." },
-      { status: 400 }
+      { status: 400 },
+    );
+  }
+
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return NextResponse.json(
+      { message: "Invalid form submission." },
+      { status: 400 },
     );
   }
 
@@ -85,20 +93,60 @@ export async function POST(request: Request) {
     email: normalizeText(body.email, 180),
     projectType: normalizeText(body.projectType, 120) || "Project Inquiry",
     timeline: normalizeText(body.timeline, 120),
-    message: normalizeText(body.message, 3000)
+    message: normalizeText(body.message, 3000),
   };
 
   if (!payload.name || !payload.email || !payload.message) {
     return NextResponse.json(
       { message: "Please complete your name, email, and message." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (!isValidEmail(payload.email)) {
     return NextResponse.json(
       { message: "Please enter a valid email address." },
-      { status: 400 }
+      { status: 400 },
+    );
+  }
+
+  const token = body.turnstileToken;
+  if (typeof token !== "string" || !token.trim() || token.length > 2048) {
+    return NextResponse.json(
+      { message: "Please complete the verification before sending." },
+      { status: 400 },
+    );
+  }
+
+  try {
+    const verification = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ secret: turnstileSecret, response: token }),
+        signal: AbortSignal.timeout(10000),
+        cache: "no-store",
+      },
+    );
+    if (!verification.ok) throw new Error("Verification unavailable");
+    const result = await verification.json();
+    if (result?.success !== true || result?.action !== "contact") {
+      return NextResponse.json(
+        {
+          message:
+            "Verification failed or expired. Please verify again and retry.",
+        },
+        { status: 400 },
+      );
+    }
+  } catch {
+    return NextResponse.json(
+      {
+        message:
+          "Verification is unavailable right now. Please try again or email me directly.",
+      },
+      { status: 503 },
     );
   }
 
@@ -110,7 +158,7 @@ export async function POST(request: Request) {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       from: fromEmail,
@@ -118,17 +166,17 @@ export async function POST(request: Request) {
       reply_to: payload.email,
       subject,
       text: buildTextEmail(payload),
-      html: buildHtmlEmail(payload)
-    })
+      html: buildHtmlEmail(payload),
+    }),
   });
 
   if (!resendResponse.ok) {
     return NextResponse.json(
       {
         message:
-          "Message could not be sent right now. Please try again or copy your message."
+          "Message could not be sent right now. Please try again or copy your message.",
       },
-      { status: 502 }
+      { status: 502 },
     );
   }
 

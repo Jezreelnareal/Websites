@@ -14,7 +14,7 @@ This portfolio presents my background, selected projects, creative work, and con
 - About page with experience, projects, education, competitions, and a working toolkit
 - Work page with category links and full-size graphics and video previews
 - Native preview dialogs with keyboard focus handling and Escape-to-close
-- Resend contact form with native field validation and retry feedback
+- Resend contact form with Cloudflare Turnstile verification, native field validation, and retry feedback
 - Responsive navigation, keyboard focus styles, and reduced-motion support
 - Videos use local poster frames and pause offscreen or when the tab is hidden
 
@@ -82,9 +82,27 @@ Create a `.env.local` file in the project root. You can copy the values from `.e
 RESEND_API_KEY=your_resend_api_key_here
 CONTACT_TO_EMAIL=jezreelborlongan7@gmail.com
 RESEND_FROM_EMAIL="Portfolio Contact <onboarding@resend.dev>"
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=your_turnstile_site_key_here
+TURNSTILE_SECRET_KEY=your_turnstile_secret_key_here
 ```
 
 The contact form needs these variables to send messages successfully.
+
+### Cloudflare verification setup
+
+1. In the [Cloudflare dashboard](https://dash.cloudflare.com/), open **Turnstile** and choose **Add widget**.
+2. Name it `Portfolio inquiries`, add your portfolio hostname (for example `your-portfolio.vercel.app` and your custom domain), and choose **Managed** mode. Enter hostnames without `https://` or paths. Configure each environment's allowed hostnames in Cloudflare.
+3. Copy the **site key** into `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in `.env.local`. The site key is public.
+4. Copy the **secret key** into `TURNSTILE_SECRET_KEY` in `.env.local`. Keep it server-only: never prefix it with `NEXT_PUBLIC_`, commit it, or place it in client code.
+5. Add both variables to your deployment's environment settings as well (for example Vercel), then redeploy. Restart the local dev server after changing keys; the public site key is included at build time.
+
+The dark verification widget appears above **Send message**. Sending stays disabled until verification succeeds. `/api/contact` independently validates the token with Cloudflare before calling Resend, including the `contact` action. Missing configuration, invalid or expired tokens, and verification outages block submission. After each attempt, the widget refreshes; a failed send preserves the draft.
+
+For local development, use a separate widget that allows `localhost`, or Cloudflare's [documented test keys](https://developers.cloudflare.com/turnstile/troubleshooting/testing/). Never use test keys in production. No test keys or verification bypass are enabled automatically.
+
+Implementation reference: [Cloudflare server-side validation](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/).
+
+Run the contact endpoint's isolated verification tests with `node --test tests/contact-route.test.mjs`. These mock Cloudflare and Resend; they never send email.
 
 ## Certificate showcase
 
