@@ -38,14 +38,18 @@ export function createPageMetadata({
   description,
   path
 }: PageSeo): Metadata {
+  const pageTitle = path === "/"
+    ? `${authorName} | ${title}`
+    : `${title} | ${authorName}`;
+
   return {
-    title: { absolute: `${title} | ${authorName}` },
+    title: { absolute: pageTitle },
     description,
     alternates: {
       canonical: path
     },
     openGraph: {
-      title: `${title} | ${authorName}`,
+      title: pageTitle,
       description,
       url: path,
       siteName,
@@ -60,7 +64,7 @@ export function createPageMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | ${authorName}`,
+      title: pageTitle,
       description,
       images: [defaultOgImage]
     }

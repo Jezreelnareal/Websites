@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     shortcut: "/pics/nav-logo.png",
   },
   title: {
-    default: `${authorName} | Web & Blockchain Developer`,
+    default: `${authorName} | Web Designer & Developer`,
     template: `%s | ${authorName}`,
   },
   description: siteDescription,
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: `${authorName} | Web & Blockchain Developer`,
+    title: `${authorName} | Web Designer & Developer`,
     description: siteDescription,
     url: "/",
     siteName,
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${authorName} | Web & Blockchain Developer`,
+    title: `${authorName} | Web Designer & Developer`,
     description: siteDescription,
     images: [defaultOgImage],
     creator: "@jborlongan07",

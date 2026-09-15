@@ -29,8 +29,6 @@ export function CertificateHighlights() {
           </h2>
         </div>
         <p>
-          Two highlights from my journey.
-          <br />
           Drag a badge to give it a spin.
         </p>
       </header>
