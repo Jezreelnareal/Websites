@@ -25,6 +25,10 @@ import "@fontsource/instrument-serif/400-italic.css";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   applicationName: siteName,
+  icons: {
+    icon: { url: "/pics/nav-logo.png", type: "image/png" },
+    shortcut: "/pics/nav-logo.png",
+  },
   title: {
     default: `${authorName} | Web & Blockchain Developer`,
     template: `%s | ${authorName}`,
