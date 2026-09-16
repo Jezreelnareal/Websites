@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
-import { PreviewDialog } from "@/components/preview-dialog";
-import type { GalleryImage } from "@/lib/data";
+import { PreviewDialog } from "@/components/ui/preview-dialog";
+import type { GalleryImage } from "@/lib/data/portfolio";
 
 export function GraphicGallery({ images }: { images: GalleryImage[] }) {
   const [selected, setSelected] = useState<GalleryImage | null>(null);

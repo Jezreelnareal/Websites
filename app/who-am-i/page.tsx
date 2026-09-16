@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { ExperienceTimeline } from "@/components/experience-timeline";
-import { TechnologyLabel } from "@/components/technology-label";
+import { ExperienceTimeline } from "@/components/ui/experience-timeline";
+import { TechnologyLabel } from "@/components/ui/technology-label";
 import {
   experienceEntries,
   educationEntries,
   portraitImage,
   contactInfo,
   skillGroups,
-} from "@/lib/data";
+} from "@/lib/data/portfolio";
 import { createPageMetadata } from "@/lib/seo";
 import "./about.css";
 

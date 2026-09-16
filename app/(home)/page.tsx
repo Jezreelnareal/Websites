@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { ClassicHero } from "@/components/classic-hero";
-import { CertificateHighlights } from "@/components/certificate-highlights";
-import { SpotlightProjects } from "@/components/spotlight-projects";
-import { ExperienceTimeline } from "@/components/experience-timeline";
-import { ViewportVideo } from "@/components/viewport-video";
-import { experienceEntries, webProjects } from "@/lib/data";
+import { ClassicHero } from "./_components/classic-hero";
+import { CertificateHighlights } from "./_components/certificate-highlights";
+import { SpotlightProjects } from "@/components/projects/spotlight-projects";
+import { ExperienceTimeline } from "@/components/ui/experience-timeline";
+import { ViewportVideo } from "@/components/ui/viewport-video";
+import { experienceEntries, webProjects } from "@/lib/data/portfolio";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({

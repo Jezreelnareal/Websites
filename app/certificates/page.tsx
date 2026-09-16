@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { CertificateShowcase } from "@/components/certificate-showcase";
+import { CertificateShowcase } from "./_components/certificate-showcase";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({

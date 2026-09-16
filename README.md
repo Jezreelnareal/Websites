@@ -74,6 +74,12 @@ npm run lint
 
 Runs ESLint.
 
+```bash
+npm test
+```
+
+Runs the contact API and email regression checks with mocked providers; no email is sent.
+
 ## Environment Variables
 
 Create a `.env.local` file in the project root. You can copy the values from `.env.example` and replace them with your real credentials:
@@ -137,7 +143,7 @@ Drag and release to spin with momentum that gradually slows, or use left/right a
 individual certificates. Reduced-motion preferences show stationary badges and
 remove the extended sticky scroll; browsers without WebGL show static previews.
 
-Edit `lib/certificates.ts` to update the collection. Trend Micro uCTF includes
+Edit `lib/data/certificates.ts` to update the collection. Trend Micro uCTF includes
 the supplied participation certificate for the August 22, 2025 preliminary round.
 AWS Cloud Quest links to the public Credly training badge issued September 10, 2026;
 the Python and Morph entries remain experience previews.
@@ -160,16 +166,61 @@ The Python badge uses the unmodified logo from the [Python Software Foundation's
 ## Project Structure
 
 ```text
-app/              Pages, layouts, and API routes
-components/       Reusable interface components
-lib/              Portfolio data and shared logic
-public/           Images, videos, and static assets
+app/                       Next.js pages, metadata routes, and API endpoints
+  (home)/                  Homepage at / (the group name is not in the URL)
+    _components/           Homepage hero and certificate highlights
+    page.tsx
+    home.css
+  api/contact/route.ts     Inquiry validation, Turnstile checks, and Resend delivery
+  lets-talk/               Contact page and its CSS
+    _components/           Contact form and Turnstile widget (used only here)
+  who-am-i/                About page and its CSS
+  spotlights/              Work page and its CSS
+    _components/           Graphics/video galleries and section navigation
+  certificates/            Certificates page
+    _components/           Full collection layout (used only here)
+components/
+  certificates/            Interactive badge chapter shared by home and certificates
+  layout/                  Main navigation and footer
+  motion/                  Scroll and animation behavior
+  projects/                Project previews shared by home and Spotlights
+  ui/                      Shared dialogs, video, technology labels, and timeline
+lib/
+  data/portfolio.ts        Projects, skills, experience, and contact information
+  data/certificates.ts     Certificate content and types
+  certificates/scene.ts    Three.js badge rendering and interaction
+  contact/email.ts         HTML/plain-text email templates and prefilled reply links
+  seo.ts                   Shared metadata and structured data
+styles/                    Global theme, shared layouts, and feature styles
+public/                    Images, videos, and static assets
+tests/                     Contact and email regression tests
 ```
 
-Shared layout and typography live in `app/globals.css`; badge styles live in
-`app/certificates.css`. The rest of the site's stage layouts and interactions use
-`app/experience.css` and `components/scene-motion.tsx`. Project and gallery content is in `lib/data.ts`, and
-video poster frames are stored in `public/posters/`.
+Shared layout and typography live in `styles/globals.css`; badge styles live in
+`styles/certificates.css`. Stage layouts use `styles/experience.css`, with scroll
+behavior in `components/motion/scene-motion.tsx`. Page-specific CSS stays beside
+its page in `app/`. Preserve the stylesheet import order in `app/layout.tsx`
+because later styles refine the shared defaults. The project uses custom CSS
+alongside Tailwind utilities.
+
+**Ownership rule:** a component used by one page belongs in that route's
+`_components/` directory. Import it relatively from that page or its siblings;
+other routes should not import it. Components used by multiple pages belong in
+the root `components/` directory. Application-wide navigation and motion also
+stay shared. `_components` folders are private implementation files, not routes.
+The about page currently builds its unique sections directly in `page.tsx` and
+uses shared components, so it does not need an empty `_components/` folder.
+
+Page-specific CSS stays with its page. `app/(home)/home.css` is still imported
+from the root layout in its original cascade position to preserve the existing
+hero styling. Badge CSS remains shared because home and certificates both use it.
+
+Use `@/components/<feature>/<component>` for shared imports and `@/lib/data/*`
+for editable portfolio content. Edit email presentation and reply drafts in
+`lib/contact/email.ts`; keep request validation and delivery in the API route.
+Static asset URLs are unchanged; video poster frames remain in `public/posters/`.
+Generated `.next/`, dependencies in `node_modules/`, and local tools/previews in
+`.tmp/` are ignored by Git and are not application source.
 
 ## Deployment
 

@@ -3,10 +3,10 @@
 import Image from "next/image";
 import { useState } from "react";
 import { ArrowUpRight, Plus } from "lucide-react";
-import { PreviewDialog } from "@/components/preview-dialog";
-import { ViewportVideo } from "@/components/viewport-video";
-import { TechnologyLabel } from "@/components/technology-label";
-import type { WebProject } from "@/lib/data";
+import { PreviewDialog } from "@/components/ui/preview-dialog";
+import { ViewportVideo } from "@/components/ui/viewport-video";
+import { TechnologyLabel } from "@/components/ui/technology-label";
+import type { WebProject } from "@/lib/data/portfolio";
 
 export function SpotlightProjects({
   projects,

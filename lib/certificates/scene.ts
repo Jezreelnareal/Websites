@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { certificateLabel, type Certificate } from "@/lib/certificates";
+import { certificateLabel, type Certificate } from "@/lib/data/certificates";
 
 // Small, deterministic surface maps stay attached to the geometry as it spins.
 // Red holds surface height; green holds roughness, as expected by Three.js.

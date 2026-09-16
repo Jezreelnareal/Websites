@@ -1,5 +1,5 @@
-import { CertificateChapter } from "@/components/certificate-showcase";
-import { certificates } from "@/lib/certificates";
+import { CertificateChapter } from "@/components/certificates/certificate-chapter";
+import { certificates } from "@/lib/data/certificates";
 
 const highlights = [
   {

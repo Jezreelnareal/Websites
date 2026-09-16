@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
-import { ViewportVideo } from "@/components/viewport-video";
-import { homeHeroVideos, videoHighlights } from "@/lib/data";
+import { ViewportVideo } from "@/components/ui/viewport-video";
+import { homeHeroVideos, videoHighlights } from "@/lib/data/portfolio";
 
 export function ClassicHero() {
   return (

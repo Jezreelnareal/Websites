@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import type { ResumeEntry } from "@/lib/data";
+import type { ResumeEntry } from "@/lib/data/portfolio";
 
 export function ExperienceTimeline({
   entries,

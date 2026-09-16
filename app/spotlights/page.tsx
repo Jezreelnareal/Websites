@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { SpotlightProjects } from "@/components/spotlight-projects";
-import { VideoHighlightGallery } from "@/components/video-highlight-gallery";
-import { GraphicGallery } from "@/components/graphic-gallery";
-import { SpotlightNavigation } from "@/components/spotlight-navigation";
-import { graphicImages, videoHighlights, webProjects } from "@/lib/data";
+import { SpotlightProjects } from "@/components/projects/spotlight-projects";
+import { VideoHighlightGallery } from "./_components/video-highlight-gallery";
+import { GraphicGallery } from "./_components/graphic-gallery";
+import { SpotlightNavigation } from "./_components/spotlight-navigation";
+import { graphicImages, videoHighlights, webProjects } from "@/lib/data/portfolio";
 import { createPageMetadata } from "@/lib/seo";
 import "./spotlights.css";
 

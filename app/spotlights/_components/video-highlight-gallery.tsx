@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { Play } from "lucide-react";
-import { ViewportVideo } from "@/components/viewport-video";
-import { PreviewDialog } from "@/components/preview-dialog";
-import type { VideoItem } from "@/lib/data";
+import { ViewportVideo } from "@/components/ui/viewport-video";
+import { PreviewDialog } from "@/components/ui/preview-dialog";
+import type { VideoItem } from "@/lib/data/portfolio";
 
 export function VideoHighlightGallery({ videos }: { videos: VideoItem[] }) {
   const [selected, setSelected] = useState<VideoItem | null>(null);

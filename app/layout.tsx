@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-import { MotionReveal } from "@/components/motion-reveal";
-import { SceneMotion } from "@/components/scene-motion";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeader } from "@/components/layout/site-header";
+import { MotionReveal } from "@/components/motion/motion-reveal";
+import { SceneMotion } from "@/components/motion/scene-motion";
 import {
   authorName,
   defaultOgImage,
@@ -13,11 +13,11 @@ import {
   siteUrl,
   websiteJsonLd,
 } from "@/lib/seo";
-import "./globals.css";
-import "./classic-hero.css";
-import "./experience.css";
-import "./section-surfaces.css";
-import "./navigation.css";
+import "@/styles/globals.css";
+import "@/app/(home)/home.css";
+import "@/styles/experience.css";
+import "@/styles/section-surfaces.css";
+import "@/styles/navigation.css";
 import "@fontsource-variable/dm-sans";
 import "@fontsource/instrument-serif/400.css";
 import "@fontsource/instrument-serif/400-italic.css";

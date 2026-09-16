@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { contactInfo, portraitImage, socialLinks } from "@/lib/data";
+import { contactInfo, portraitImage, socialLinks } from "@/lib/data/portfolio";
 
 export const siteUrl = "https://jezreel-portfolio.vercel.app";
 export const siteName = "Jezreel Borlongan Portfolio";

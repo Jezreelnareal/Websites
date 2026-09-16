@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, ArrowUp } from "lucide-react";
-import { contactInfo, socialLinks } from "@/lib/data";
+import { contactInfo, socialLinks } from "@/lib/data/portfolio";
 
 export function SiteFooter() {
   const isContactPage = usePathname() === "/lets-talk";

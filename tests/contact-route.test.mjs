@@ -9,12 +9,18 @@ import ts from "typescript";
 const routePath = fileURLToPath(
   new URL("../app/api/contact/route.ts", import.meta.url),
 );
-const compiled = ts.transpileModule(fs.readFileSync(routePath, "utf8"), {
-  compilerOptions: {
-    module: ts.ModuleKind.CommonJS,
-    target: ts.ScriptTarget.ES2022,
-  },
-}).outputText;
+const emailPath = fileURLToPath(
+  new URL("../lib/contact/email.ts", import.meta.url),
+);
+const compile = (path) =>
+  ts.transpileModule(fs.readFileSync(path, "utf8"), {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+    },
+  }).outputText;
+const compiled = compile(routePath);
+const compiledEmail = compile(emailPath);
 const payload = {
   name: "Test",
   email: "test@example.com",
@@ -27,12 +33,22 @@ function handler(
   env = { RESEND_API_KEY: "test-resend", TURNSTILE_SECRET_KEY: "test-secret" },
 ) {
   const exports = {};
+  const emailExports = {};
+  vm.runInNewContext(
+    compiledEmail,
+    { exports: emailExports },
+    { filename: emailPath },
+  );
+  const nativeRequire = createRequire(routePath);
   // Isolated environment and fetch: never load real keys or make network requests.
   vm.runInNewContext(
     compiled,
     {
       exports,
-      require: createRequire(routePath),
+      require: (specifier) =>
+        specifier === "@/lib/contact/email"
+          ? emailExports
+          : nativeRequire(specifier),
       process: { env },
       fetch,
       AbortSignal,

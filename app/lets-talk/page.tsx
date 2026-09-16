@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ArrowUpRight, Mail, Phone } from "lucide-react";
-import { ContactForm } from "@/components/contact-form";
-import { contactInfo, socialLinks } from "@/lib/data";
+import { ContactForm } from "./_components/contact-form";
+import { contactInfo, socialLinks } from "@/lib/data/portfolio";
 import { createPageMetadata } from "@/lib/seo";
 import "./contact.css";
 

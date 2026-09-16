@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { ArrowUpRight, CheckCircle2, Copy, LoaderCircle } from "lucide-react";
-import { TurnstileVerification } from "@/components/turnstile-verification";
+import { TurnstileVerification } from "./turnstile-verification";
 
 const initialForm = {
   name: "",
