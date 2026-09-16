@@ -77,6 +77,23 @@
 .work-page #web-development {
   --section-surface: var(--surface-development);
 }
+/* Clip the home section's surface, not its overlapping decorative beams. */
+#selected-work {
+  position: relative;
+  isolation: isolate;
+  box-shadow: none;
+  clip-path: none;
+}
+#selected-work::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--section-surface);
+  box-shadow: 0 0 0 100vmax var(--section-surface);
+  clip-path: inset(0 -100vmax);
+  pointer-events: none;
+}
 .creative-section,
 .work-page #video-editing {
   --section-surface: var(--surface-creative);

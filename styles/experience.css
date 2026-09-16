@@ -158,6 +158,8 @@
 }
 .project-collection,
 .project-collection-compact {
+  /* Temporarily disabled; set to 1 to restore the scroll-driven video glow. */
+  --video-scroll-highlight: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 80px;
@@ -199,9 +201,11 @@
 }
 .project-collection-compact [data-project="REMITSAFE"] {
   --video-light-color: 48 119 164;
+  --video-spotlight-hue: 203;
 }
 .project-collection-compact [data-project="V-CHAIN"] {
   --video-light-color: 214 82 47;
+  --video-spotlight-hue: 13;
 }
 .project-collection-compact .project-media::before {
   inset: 8% 2% 0;
@@ -213,21 +217,36 @@
     transparent 100%
   );
   filter: blur(20px);
-  opacity: clamp(0, calc(var(--scene-progress, 1) * 1.5), 1);
+  opacity: calc(
+    clamp(0, calc(var(--scene-progress, 1) * 1.5), 1) *
+      var(--video-scroll-highlight, 1)
+  );
   z-index: -2;
 }
 .project-collection-compact .project-screen {
-  --video-light: clamp(0, calc(var(--scene-progress, 1) * 1.5), 1);
+  --video-light: calc(
+    clamp(0, calc(var(--scene-progress, 1) * 1.5), 1) *
+      var(--video-scroll-highlight, 1)
+  );
   box-shadow:
     0 0 44px rgb(var(--video-light-color) / calc(var(--video-light) * 0.16)),
     0 0 100px rgb(var(--video-light-color) / calc(var(--video-light) * 0.1));
 }
+.project-media[data-custom-backdrop]::before {
+  content: none;
+}
+.project-media[data-custom-backdrop] {
+  overflow: visible;
+}
+.project-media[data-custom-backdrop] .project-backdrop {
+  overflow: clip;
+}
 @media (prefers-reduced-motion: reduce) {
   .project-collection-compact .project-media::before {
-    opacity: 0.45;
+    opacity: calc(0.45 * var(--video-scroll-highlight, 1));
   }
   .project-collection-compact .project-screen {
-    --video-light: 0.45;
+    --video-light: calc(0.45 * var(--video-scroll-highlight, 1));
   }
 }
 .project-backdrop {

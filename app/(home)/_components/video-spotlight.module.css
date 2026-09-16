@@ -1,0 +1,41 @@
+.spotlight {
+  position: absolute;
+  --beam-rise: clamp(180px, 20vw, 350px);
+  top: calc(-550px - var(--beam-rise));
+  bottom: -80px;
+  left: 50%;
+  width: var(--spotlight-viewport-width, 100vw);
+  transform: translateX(-50%);
+  z-index: -2;
+  pointer-events: none;
+  overflow: hidden;
+  /* Beams reach both viewport edges; soften only the vertical boundaries. */
+  mask-image:
+    linear-gradient(
+      to bottom,
+      transparent,
+      black 160px,
+      black calc(100% - 120px),
+      transparent
+    ),
+    linear-gradient(
+      to bottom,
+      transparent var(--nav-cutoff, 0px),
+      black calc(var(--nav-cutoff, 0px) + 120px)
+    );
+  mask-composite: intersect;
+}
+
+.spotlight > div {
+  /* Preserve the upward overlap on entry, then keep the light source near the
+     nav's lower edge instead of letting it disappear behind the opaque mask. */
+  top: max(550px, calc(var(--nav-cutoff, 0px) - 120px));
+  opacity: var(--spotlight-visibility, 0);
+  transition: opacity 160ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight > div {
+    transition: none;
+  }
+}

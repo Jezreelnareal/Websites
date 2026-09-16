@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ArrowUpRight, Plus } from "lucide-react";
 import { PreviewDialog } from "@/components/ui/preview-dialog";
 import { ViewportVideo } from "@/components/ui/viewport-video";
@@ -11,9 +11,11 @@ import type { WebProject } from "@/lib/data/portfolio";
 export function SpotlightProjects({
   projects,
   compact = false,
+  mediaBackdrop,
 }: {
   projects: WebProject[];
   compact?: boolean;
+  mediaBackdrop?: ReactNode;
 }) {
   const [selected, setSelected] = useState<WebProject | null>(null);
   return (
@@ -33,7 +35,11 @@ export function SpotlightProjects({
               data-scene-pin={compact && project.video ? "" : undefined}
             >
               {project.video && (
-                <div className={`project-media project-media-${index % 2}`}>
+                <div
+                  className={`project-media project-media-${index % 2}`}
+                  data-custom-backdrop={mediaBackdrop ? "" : undefined}
+                >
+                  {mediaBackdrop}
                   <span className="project-backdrop" aria-hidden="true">
                     {project.stageTitle ||
                       project.displayTitle ||

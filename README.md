@@ -168,7 +168,7 @@ The Python badge uses the unmodified logo from the [Python Software Foundation's
 ```text
 app/                       Next.js pages, metadata routes, and API endpoints
   (home)/                  Homepage at / (the group name is not in the URL)
-    _components/           Homepage hero and certificate highlights
+    _components/           Hero, certificate highlights, and video spotlight
     page.tsx
     home.css
   api/contact/route.ts     Inquiry validation, Turnstile checks, and Resend delivery
@@ -221,6 +221,37 @@ for editable portfolio content. Edit email presentation and reply drafts in
 Static asset URLs are unchanged; video poster frames remain in `public/posters/`.
 Generated `.next/`, dependencies in `node_modules/`, and local tools/previews in
 `.tmp/` are ignored by Git and are not application source.
+
+### Homepage video spotlight
+
+The selected-work videos use [Aceternity UI's Spotlight New](https://ui.aceternity.com/components/spotlight-new)
+by Manu Arora, in `app/(home)/_components/video-spotlight.tsx`. It preserves the
+original beam dimensions, angles, 100px opposing sweeps, seven-second animation,
+and 1.5-second entrance fade using Motion for React. Gradient opacity is doubled
+for brighter beams.
+The shared project component accepts the effect through its `mediaBackdrop` slot;
+the homepage supplies it, while Spotlights keeps its existing presentation.
+
+The beam hue follows each project's `--video-spotlight-hue`: blue for
+RemitSafe and orange for V-Chain. The effect sits behind the video and ignores
+pointer events. Its outer layer spans the viewport so the beams hug both sides
+of the section, with vertical edge fades in `video-spotlight.module.css` to avoid
+a visible rectangular cutoff.
+The beams extend upward into the introduction and preceding section. Only the
+selected-work background is clipped; its decorative light can overlap above it.
+That overlap is visible only as the associated video comes into view. The light
+fades out again as the video leaves, preventing an upcoming project's beams from
+appearing behind the content before it.
+The layer also fades below the sticky nav's content mask, tracking its position
+on scroll and resize so the light does not meet the nav in a hard horizontal edge.
+As the video pins, the beam origin follows the nav's lower edge to keep the light
+visible around the project instead of moving behind the nav mask.
+The beam geometry and sweep animation are unchanged.
+Selected-work videos, background titles, and descriptions share a scroll zoom:
+they grow on entry, hold full size while in view, and shrink on exit. This is
+scoped to the homepage projects, is gentler on mobile, and respects reduced motion.
+The component is used as part of this portfolio;
+see [Aceternity's license](https://ui.aceternity.com/licence).
 
 ## Deployment
 

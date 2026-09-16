@@ -269,6 +269,58 @@
   }
 }
 
+#selected-work .project-backdrop {
+  filter: blur(clamp(1.5px, 0.2vw, 3px));
+}
+
+#selected-work .project-feature {
+  --project-zoom-range: 0.14;
+  --project-presence: clamp(
+    0,
+    min(
+      calc(var(--project-view-progress, 0.5) / 0.35),
+      calc((1 - var(--project-view-progress, 0.5)) / 0.35)
+    ),
+    1
+  );
+  --project-zoom: calc(
+    1 - var(--project-zoom-range) * (1 - var(--project-presence))
+  );
+}
+
+#selected-work
+  .project-feature
+  :is(
+    .project-screen,
+    .project-backdrop,
+    .project-media-label,
+    .project-caption
+  ) {
+  scale: var(--project-zoom);
+  transform-origin: center;
+  transition: scale 180ms ease-out;
+}
+
+@media (max-width: 767px) {
+  #selected-work .project-feature {
+    --project-zoom-range: 0.08;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #selected-work
+    .project-feature
+    :is(
+      .project-screen,
+      .project-backdrop,
+      .project-media-label,
+      .project-caption
+    ) {
+    scale: none;
+    transition: none;
+  }
+}
+
 @keyframes soft-arrival {
   from {
     opacity: 0.3;

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { ClassicHero } from "./_components/classic-hero";
 import { CertificateHighlights } from "./_components/certificate-highlights";
+import { VideoSpotlight } from "./_components/video-spotlight";
 import { SpotlightProjects } from "@/components/projects/spotlight-projects";
 import { ExperienceTimeline } from "@/components/ui/experience-timeline";
 import { ViewportVideo } from "@/components/ui/viewport-video";
@@ -41,10 +42,11 @@ export default function HomePage() {
           </p>
         </div>
         <SpotlightProjects
-          projects={["REMITSAFE", "V-CHAIN"].map(
-            (title) => webProjects.find((project) => project.stageTitle === title)!,
+          projects={["REMITSAFE", "V-CHAIN"].map((title) =>
+            webProjects.find((project) => project.stageTitle === title)!,
           )}
           compact
+          mediaBackdrop={<VideoSpotlight key="video-spotlight" />}
         />
       </section>
       <section className="creative-section" data-motion-scene>

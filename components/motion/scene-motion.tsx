@@ -36,6 +36,15 @@ export function SceneMotion() {
       let moving = false;
       active.forEach((element) => {
         const rect = element.getBoundingClientRect();
+        if (element.matches("#selected-work .project-feature")) {
+          // Use the entire entrance/exit, including the sticky reading period.
+          const viewportProgress =
+            (innerHeight - rect.top) / (innerHeight + rect.height);
+          element.style.setProperty(
+            "--project-view-progress",
+            String(Math.max(0, Math.min(1, viewportProgress))),
+          );
+        }
         const pin = element.querySelector<HTMLElement>("[data-scene-pin]");
         const pinned = pin && getComputedStyle(pin).position === "sticky";
         const raw = pinned
