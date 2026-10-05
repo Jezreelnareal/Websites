@@ -192,7 +192,11 @@ export async function POST(request: Request) {
       preferredDate: isCall ? normalizeText(body.preferredDate, 10) : "",
       preferredTime: isCall ? normalizeText(body.preferredTime, 5) : "",
     });
-  } catch {
+  } catch (error) {
+    console.error(
+      "Google Sheets save failed:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
     return NextResponse.json(
       {
         message:
@@ -213,29 +217,29 @@ export async function POST(request: Request) {
       "Content-Type": "application/json",
       "Idempotency-Key": `contact/${submissionId}`,
     },
-body: JSON.stringify({
-  from: fromEmail,
-  to: [toEmail],
-  reply_to: payload.email,
-  subject,
-  text: buildTextEmail(payload),
-  html: buildHtmlEmail(payload),
-}),
+    body: JSON.stringify({
+      from: fromEmail,
+      to: [toEmail],
+      reply_to: payload.email,
+      subject,
+      text: buildTextEmail(payload),
+      html: buildHtmlEmail(payload),
+    }),
   });
 
-if (!resendResponse.ok) {
-  return NextResponse.json(
-    {
-      message:
-        "Message could not be sent right now. Please try again or copy your message.",
-    },
-    { status: 502 },
-  );
-}
+  if (!resendResponse.ok) {
+    return NextResponse.json(
+      {
+        message:
+          "Message could not be sent right now. Please try again or copy your message.",
+      },
+      { status: 502 },
+    );
+  }
 
-return NextResponse.json({
-  message: payload.appointment
-    ? "Call request sent. Pending confirmation by email."
-    : "Message sent successfully.",
-});
+  return NextResponse.json({
+    message: payload.appointment
+      ? "Call request sent. Pending confirmation by email."
+      : "Message sent successfully.",
+  });
 }
