@@ -4,6 +4,8 @@ import {
   buildTextEmail,
   type ContactPayload,
 } from "@/lib/contact/email";
+import { randomUUID } from "node:crypto";
+import { saveToGoogleSheets } from "@/lib/contact/google-sheets";
 
 const resendApiUrl = "https://api.resend.com/emails";
 const fallbackToEmail = "jezreelborlongan7@gmail.com";
@@ -99,7 +101,7 @@ export async function POST(request: Request) {
       !Number.isFinite(timestamp) ||
       timestamp <= Date.now() ||
       new Date(timestamp + 8 * 60 * 60 * 1000).toISOString().slice(0, 16) !==
-        `${date}T${time}`
+      `${date}T${time}`
     ) {
       return NextResponse.json(
         {
@@ -161,6 +163,45 @@ export async function POST(request: Request) {
     );
   }
 
+  const submissionId =
+    body.submissionId === undefined ? randomUUID() : body.submissionId;
+
+  if (
+    typeof submissionId !== "string" ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      submissionId,
+    )
+  ) {
+    return NextResponse.json(
+      { message: "Please refresh the page and try again." },
+      { status: 400 },
+    );
+  }
+
+  const isCall = body.intent === "appointment";
+
+  try {
+    await saveToGoogleSheets({
+      submissionId,
+      name: payload.name,
+      email: payload.email,
+      requestType: isCall ? "appointment" : "inquiry",
+      projectType: payload.projectType,
+      timeline: isCall ? "" : (payload.timeline ?? ""),
+      message: payload.message,
+      preferredDate: isCall ? normalizeText(body.preferredDate, 10) : "",
+      preferredTime: isCall ? normalizeText(body.preferredTime, 5) : "",
+    });
+  } catch {
+    return NextResponse.json(
+      {
+        message:
+          "Your submission could not be saved right now. Please retry without changing your details.",
+      },
+      { status: 503 },
+    );
+  }
+
   const toEmail = process.env.CONTACT_TO_EMAIL || fallbackToEmail;
   const fromEmail = process.env.RESEND_FROM_EMAIL || defaultFromEmail;
   const subject = `${payload.appointment ? "Call Request" : "Project Inquiry"} from ${payload.name}`;
@@ -170,30 +211,31 @@ export async function POST(request: Request) {
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
+      "Idempotency-Key": `contact/${submissionId}`,
     },
-    body: JSON.stringify({
-      from: fromEmail,
-      to: [toEmail],
-      reply_to: payload.email,
-      subject,
-      text: buildTextEmail(payload),
-      html: buildHtmlEmail(payload),
-    }),
+body: JSON.stringify({
+  from: fromEmail,
+  to: [toEmail],
+  reply_to: payload.email,
+  subject,
+  text: buildTextEmail(payload),
+  html: buildHtmlEmail(payload),
+}),
   });
 
-  if (!resendResponse.ok) {
-    return NextResponse.json(
-      {
-        message:
-          "Message could not be sent right now. Please try again or copy your message.",
-      },
-      { status: 502 },
-    );
-  }
+if (!resendResponse.ok) {
+  return NextResponse.json(
+    {
+      message:
+        "Message could not be sent right now. Please try again or copy your message.",
+    },
+    { status: 502 },
+  );
+}
 
-  return NextResponse.json({
-    message: payload.appointment
-      ? "Call request sent. Pending confirmation by email."
-      : "Message sent successfully.",
-  });
+return NextResponse.json({
+  message: payload.appointment
+    ? "Call request sent. Pending confirmation by email."
+    : "Message sent successfully.",
+});
 }

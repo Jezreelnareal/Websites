@@ -45,10 +45,19 @@ function handler(
     compiled,
     {
       exports,
-      require: (specifier) =>
-        specifier === "@/lib/contact/email"
-          ? emailExports
-          : nativeRequire(specifier),
+      require: (specifier) => {
+        if (specifier === "@/lib/contact/email") {
+          return emailExports;
+        }
+
+        if (specifier === "@/lib/contact/google-sheets") {
+          return {
+            saveToGoogleSheets: async () => undefined,
+          };
+        }
+
+        return nativeRequire(specifier);
+      },
       process: { env },
       fetch,
       AbortSignal,

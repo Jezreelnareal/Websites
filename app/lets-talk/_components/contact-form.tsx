@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { ArrowUpRight, CheckCircle2, Copy, LoaderCircle } from "lucide-react";
 import { TurnstileVerification } from "./turnstile-verification";
 
@@ -40,6 +40,12 @@ export function ContactForm() {
     setStatus(null);
     setCopied(false);
   };
+
+  const submission = useRef<{
+    signature: string;
+    id: string;
+  } | null>(null);
+
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSending) return;
@@ -76,17 +82,33 @@ export function ContactForm() {
     setStatus(null);
     setTurnstileToken("");
     try {
+
+      const signature = JSON.stringify({ ...form, intent });
+
+      if (!submission.current || submission.current.signature !== signature) {
+        submission.current = {
+          signature,
+          id: crypto.randomUUID(),
+        };
+      }
+
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, intent, turnstileToken }),
+        body: JSON.stringify({
+          ...form,
+          intent,
+          turnstileToken,
+          submissionId: submission.current.id,
+        }),
       });
       const result = await response.json().catch(() => null);
       if (!response.ok)
         throw new Error(
           result?.message ||
-            "Couldn't send your message. Try again or email me directly.",
+          "Couldn't send your message. Try again or email me directly.",
         );
+      submission.current = null;
       setForm(initialForm);
       setStatus({
         type: "success",
@@ -112,10 +134,9 @@ export function ContactForm() {
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(
-        `Name: ${form.name}\nEmail: ${form.email}\nProject: ${form.projectType}\n${
-          isAppointment
-            ? `Call request: ${form.preferredDate} at ${form.preferredTime} (Philippine time, UTC+8), 30 minutes, pending confirmation`
-            : `Timeline: ${form.timeline || "Not specified"}`
+        `Name: ${form.name}\nEmail: ${form.email}\nProject: ${form.projectType}\n${isAppointment
+          ? `Call request: ${form.preferredDate} at ${form.preferredTime} (Philippine time, UTC+8), 30 minutes, pending confirmation`
+          : `Timeline: ${form.timeline || "Not specified"}`
         }\n\n${form.message}`,
       );
       setCopied(true);
