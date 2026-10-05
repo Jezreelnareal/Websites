@@ -28,6 +28,7 @@ export async function saveToGoogleSheets(
         body: JSON.stringify({
             ...submission,
             secret,
+            notificationMode: "apps-script",
         }),
         redirect: "follow",
         cache: "no-store",
@@ -49,5 +50,9 @@ export async function saveToGoogleSheets(
             : `Unexpected response: HTTP ${response.status}`;
 
         throw new Error(`Google Sheets: ${detail}`);
+    }
+
+    if (result.notificationHandler !== "apps-script") {
+        throw new Error("Update the Apps Script deployment before deploying this website.");
     }
 }

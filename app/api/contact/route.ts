@@ -1,18 +1,10 @@
 import { NextResponse } from "next/server";
-import {
-  buildHtmlEmail,
-  buildTextEmail,
-  type ContactPayload,
-} from "@/lib/contact/email";
+import type { ContactPayload } from "@/lib/contact/email";
 import { randomUUID } from "node:crypto";
 import { saveToGoogleSheets } from "@/lib/contact/google-sheets";
 
-const resendApiUrl = "https://api.resend.com/emails";
-const fallbackToEmail = "jezreelborlongan7@gmail.com";
-const defaultFromEmail = "Portfolio Contact <onboarding@resend.dev>";
-
 const isValidEmail = (email: string) =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  /^[^\s@,;<>]+@[^\s@,;<>]+\.[^\s@,;<>]+$/.test(email.trim());
 
 const normalizeText = (value: unknown, maxLength: number) => {
   if (typeof value !== "string") {
@@ -23,10 +15,13 @@ const normalizeText = (value: unknown, maxLength: number) => {
 };
 
 export async function POST(request: Request) {
-  const apiKey = process.env.RESEND_API_KEY;
   const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
 
-  if (!apiKey || !turnstileSecret) {
+  if (
+    !turnstileSecret ||
+    !process.env.GOOGLE_SHEETS_WEBHOOK_URL ||
+    !process.env.GOOGLE_SHEETS_WEBHOOK_SECRET
+  ) {
     return NextResponse.json(
       {
         message:
@@ -203,37 +198,6 @@ export async function POST(request: Request) {
           "Your submission could not be saved right now. Please retry without changing your details.",
       },
       { status: 503 },
-    );
-  }
-
-  const toEmail = process.env.CONTACT_TO_EMAIL || fallbackToEmail;
-  const fromEmail = process.env.RESEND_FROM_EMAIL || defaultFromEmail;
-  const subject = `${payload.appointment ? "Call Request" : "Project Inquiry"} from ${payload.name}`;
-
-  const resendResponse = await fetch(resendApiUrl, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-      "Idempotency-Key": `contact/${submissionId}`,
-    },
-    body: JSON.stringify({
-      from: fromEmail,
-      to: [toEmail],
-      reply_to: payload.email,
-      subject,
-      text: buildTextEmail(payload),
-      html: buildHtmlEmail(payload),
-    }),
-  });
-
-  if (!resendResponse.ok) {
-    return NextResponse.json(
-      {
-        message:
-          "Message could not be sent right now. Please try again or copy your message.",
-      },
-      { status: 502 },
     );
   }
 

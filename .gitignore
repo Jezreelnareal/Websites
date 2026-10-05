@@ -12,6 +12,9 @@ out/
 build/
 dist/
 
+# Generated Apps Script bundle (rebuild with npm run build:contact-script)
+/apps-script/Code.gs
+
 # Testing and coverage
 coverage/
 .tmp/

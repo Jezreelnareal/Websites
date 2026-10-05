@@ -14,7 +14,7 @@ This portfolio presents my background, selected projects, creative work, and con
 - About page with experience, projects, education, competitions, and a working toolkit
 - Work page with category links and full-size graphics and video previews
 - Native preview dialogs with keyboard focus handling and Escape-to-close
-- Resend contact form with Cloudflare Turnstile verification, native field validation, and retry feedback
+- Google Sheets contact form with Apps Script email delivery, Cloudflare Turnstile verification, and retry feedback
 - Responsive navigation, keyboard focus styles, and reduced-motion support
 - Videos use local poster frames and pause offscreen or when the tab is hidden
 
@@ -25,7 +25,7 @@ This portfolio presents my background, selected projects, creative work, and con
 - TypeScript
 - Tailwind CSS
 - Lucide React
-- Resend
+- Google Sheets and Google Apps Script (MailApp)
 - Vercel
 
 ## Getting Started
@@ -85,14 +85,29 @@ Runs the contact API and email regression checks with mocked providers; no email
 Create a `.env.local` file in the project root. You can copy the values from `.env.example` and replace them with your real credentials:
 
 ```env
-RESEND_API_KEY=your_resend_api_key_here
-CONTACT_TO_EMAIL=jezreelborlongan7@gmail.com
-RESEND_FROM_EMAIL="Portfolio Contact <onboarding@resend.dev>"
+GOOGLE_SHEETS_WEBHOOK_URL=https://script.google.com/macros/s/your_deployment_id/exec
+GOOGLE_SHEETS_WEBHOOK_SECRET=your_apps_script_form_secret
 NEXT_PUBLIC_TURNSTILE_SITE_KEY=your_turnstile_site_key_here
 TURNSTILE_SECRET_KEY=your_turnstile_secret_key_here
 ```
 
 The contact form needs these variables to send messages successfully.
+
+### Google Sheets and email setup
+
+Follow [the Apps Script deployment steps](apps-script/SETUP.md). Deploy
+`apps-script/Code.gs` to the existing Google project **before** deploying the
+updated website. Apps Script saves each inquiry, sends the visitor acknowledgment,
+and notifies the owner configured by the server-side `OWNER_EMAIL` Script Property.
+The owner notification's Reply-To points to the visitor. Resend is no longer used.
+
+Columns K and L track visitor and owner email status separately. If sending fails
+or reaches quota, the saved inquiry remains successful and the hourly
+`retryPendingConfirmations` trigger retries pending emails. Historical blank
+statuses are skipped. Sent means accepted for sending, not guaranteed inbox delivery.
+
+After editing `apps-script/receiver.gs` or `lib/contact/email.ts`, run
+`npm run build:contact-script` and redeploy the generated `apps-script/Code.gs`.
 
 ### Cloudflare verification setup
 
@@ -102,13 +117,13 @@ The contact form needs these variables to send messages successfully.
 4. Copy the **secret key** into `TURNSTILE_SECRET_KEY` in `.env.local`. Keep it server-only: never prefix it with `NEXT_PUBLIC_`, commit it, or place it in client code.
 5. Add both variables to your deployment's environment settings as well (for example Vercel), then redeploy. Restart the local dev server after changing keys; the public site key is included at build time.
 
-The dark verification widget appears above **Send message**. Sending stays disabled until verification succeeds. `/api/contact` independently validates the token with Cloudflare before calling Resend, including the `contact` action. Missing configuration, invalid or expired tokens, and verification outages block submission. After each attempt, the widget refreshes; a failed send preserves the draft.
+The dark verification widget appears above **Send message**. Sending stays disabled until verification succeeds. `/api/contact` independently validates the token with Cloudflare before calling Apps Script, including the `contact` action. Missing configuration, invalid or expired tokens, and verification outages block submission. After each attempt, the widget refreshes; a failed submission preserves the draft and its submission ID for a safe retry.
 
 For local development, use a separate widget that allows `localhost`, or Cloudflare's [documented test keys](https://developers.cloudflare.com/turnstile/troubleshooting/testing/). Never use test keys in production. No test keys or verification bypass are enabled automatically.
 
 Implementation reference: [Cloudflare server-side validation](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/).
 
-Run the contact endpoint's isolated verification tests with `node --test tests/contact-route.test.mjs`. These mock Cloudflare and Resend; they never send email.
+Run `npm test` for the contact endpoint and Apps Script regression tests. These mock Cloudflare and Google services; they never send email or write real sheet rows.
 
 ### Call requests
 
@@ -117,11 +132,11 @@ A call request is for a 30-minute introduction, with the preferred date and time
 explicitly entered in **Philippine time (Asia/Manila, UTC+8)**. Both the form and
 the API reject past times; the API also rejects invalid dates.
 
-Requests use the same Cloudflare verification and Resend configuration as inquiries.
+Requests use the same Cloudflare verification and Apps Script configuration as inquiries.
 You receive a styled **Call Request** email with the proposed time, discussion topic,
 and the visitor's reply-to address. Reply manually to agree on a time and provide
 the meeting link. The form and email label requests as **pending confirmation**.
-There is no automatic booking, calendar reservation, or visitor confirmation email.
+The visitor receives an acknowledgment; it does not confirm a booking or reserve a calendar slot.
 No additional environment variables or calendar account are required.
 
 The **Reply to sender** link opens your configured email app with the recipient,
@@ -171,7 +186,7 @@ app/                       Next.js pages, metadata routes, and API endpoints
     _components/           Hero, certificate highlights, and video spotlight
     page.tsx
     home.css
-  api/contact/route.ts     Inquiry validation, Turnstile checks, and Resend delivery
+  api/contact/route.ts     Inquiry validation, Turnstile checks, and Apps Script delivery
   lets-talk/               Contact page and its CSS
     _components/           Contact form and Turnstile widget (used only here)
   who-am-i/                About page and its CSS
@@ -194,6 +209,8 @@ lib/
 styles/                    Global theme, shared layouts, and feature styles
 public/                    Images, videos, and static assets
 tests/                     Contact and email regression tests
+apps-script/               Google receiver, generated Code.gs, and deployment instructions
+scripts/                   Apps Script bundle generator
 ```
 
 Shared layout and typography live in `styles/globals.css`; badge styles live in
@@ -262,7 +279,7 @@ This project is ready to deploy on Vercel.
 3. Add the environment variables from `.env.example`.
 4. Deploy the project.
 
-For the contact form to work on the live site, the Resend environment variables must be added in Vercel Project Settings.
+For the contact form to work on the live site, the Google Sheets webhook and Turnstile variables must be added in Vercel Project Settings. Deploy the updated Apps Script first as described in `apps-script/SETUP.md`.
 
 ## Author
 
